@@ -2,7 +2,7 @@ services {
   probe {
     operations {
       list() -> {
-        rows: { id: id, name: string }[];
+        rows: { id: id, name: string }[],
       };
     }
   }

@@ -79,7 +79,7 @@ services {
     operations {
       get(id: id) -> { post: { id: id, title: string } };
       list() -> {
-        rows: { id: id, title: string }[];
+        rows: { id: id, title: string }[],
       };
       create(title: string, tags: string[]?) -> { id: id };
     }
