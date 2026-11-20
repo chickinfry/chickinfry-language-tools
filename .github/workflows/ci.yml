@@ -51,6 +51,8 @@ jobs:
         run: node scripts/check-highlights.mjs
       - name: Parse the examples in spec/
         run: node scripts/check-spec-examples.mjs
+      - name: Check the block keywords agree
+        run: node scripts/check-keywords.mjs
 
   editors:
     name: Editors

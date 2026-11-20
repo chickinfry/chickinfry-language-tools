@@ -46,6 +46,7 @@ node --test scripts/*.test.mjs
 node scripts/check-grammar.mjs
 node scripts/check-editors.mjs
 node scripts/check-spec-examples.mjs
+node scripts/check-keywords.mjs
 ```
 
 CI runs the same commands on GitHub-hosted runners. The first command checks
@@ -55,6 +56,8 @@ grammar, and `check-editors.mjs` fails when an editor copy of the TextMate
 grammar drifts from `editors/textmate/`.
 `check-spec-examples.mjs` parses the `.chik` examples printed in `spec/`, so a
 copyable example cannot drift from the grammar.
+`check-keywords.mjs` compares the block keywords in the grammar, the highlight
+queries, the TextMate grammar, and the role file table in `spec/grammar.md`.
 
 The grammar and the editors are built in their own CI jobs:
 
