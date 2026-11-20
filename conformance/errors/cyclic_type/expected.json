@@ -7,11 +7,11 @@
       "range": {
         "start": {
           "line": 2,
-          "column": 10
+          "column": 18
         },
         "end": {
           "line": 2,
-          "column": 14
+          "column": 22
         }
       }
     }
