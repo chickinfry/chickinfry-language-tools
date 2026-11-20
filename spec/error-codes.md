@@ -37,6 +37,7 @@ and the range. Wording is not compared; see [error presentation](error-presentat
 | `CHK0405` | operations | reserved service | A service name the platform owns. |
 | `CHK0501` | conversion | unsupported | A YAML declaration with no .chik form. |
 | `CHK0502` | conversion | ambiguous | A YAML declaration that maps to more than one form. |
+| `CHK0601` | scope | outside beta | Grammar the language defines but the beta does not accept. |
 
 ## Ranges
 
@@ -48,6 +49,7 @@ and the range. Wording is not compared; see [error presentation](error-presentat
 | CHK0300–CHK0399 | Types |
 | CHK0400–CHK0499 | Operations |
 | CHK0500–CHK0599 | Conversion |
+| CHK0600–CHK0699 | Scope |
 
 ## Not in this release
 

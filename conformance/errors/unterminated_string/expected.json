@@ -1,0 +1,19 @@
+{
+  "diagnostics": [
+    {
+      "code": "CHK0002",
+      "severity": "error",
+      "path": "",
+      "range": {
+        "start": {
+          "line": 4,
+          "column": 17
+        },
+        "end": {
+          "line": 4,
+          "column": 29
+        }
+      }
+    }
+  ]
+}
