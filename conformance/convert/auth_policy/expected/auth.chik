@@ -1,0 +1,6 @@
+auth {
+  methods: ["email-password"]
+  origins: ["https://app.example.test"]
+  signup: "open"
+  browser_session: false
+}
