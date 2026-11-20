@@ -1,0 +1,6 @@
+types {
+  Post = {
+    id: id,
+    meta: { author: { name: string } },
+  };
+}

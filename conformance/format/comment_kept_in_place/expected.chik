@@ -1,0 +1,9 @@
+// header
+services {
+  // before service
+  posts {
+    operations {
+      get(id: id) -> { post: { id: id } }; // after operation
+    }
+  }
+}
