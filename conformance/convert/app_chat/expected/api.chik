@@ -1,0 +1,11 @@
+services {
+  chat {
+    operations {
+      list_messages(room_id: id, cursor: string) -> {
+        messages: { id: id, text: string, sent_at: timestamp }[],
+        next_cursor: string,
+      }
+      send_message(room_id: id, text: string) -> { message_id: id }
+    }
+  }
+}

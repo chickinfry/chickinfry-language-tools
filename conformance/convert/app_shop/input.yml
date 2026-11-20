@@ -1,0 +1,20 @@
+services:
+  shop:
+    operations:
+      list_products:
+        input:
+          cursor: {type: string}
+        output:
+          products:
+            type: list
+            items:
+              id: {type: id}
+              name: {type: string}
+              price_minor: {type: string}
+          next_cursor: {type: string}
+      create_order:
+        input:
+          product_id: {type: id}
+          quantity: {type: string}
+        output:
+          order_id: {type: id}
