@@ -3,7 +3,7 @@ services {
     operations {
       list() -> {
         rows: { id: id, name: string }[],
-      };
+      }
     }
   }
 }

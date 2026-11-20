@@ -1,5 +1,5 @@
 project {
-  name: "demo";
-  server: "typescript";
-  clients: ["typescript"];
+  name: "demo"
+  server: "typescript"
+  clients: ["typescript"]
 }
