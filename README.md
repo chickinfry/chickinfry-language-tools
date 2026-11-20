@@ -40,7 +40,7 @@ During the transition a project may use YAML or `.chik`. Converting YAML to
 
 ```sh
 node scripts/check-corpus.mjs
-node --test scripts/
+node --test scripts/*.test.mjs
 ```
 
 CI runs the same commands on GitHub-hosted runners. The first command checks

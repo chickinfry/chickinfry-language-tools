@@ -22,4 +22,4 @@ jobs:
       - name: Check the corpus is well formed
         run: node scripts/check-corpus.mjs
       - name: Test the corpus checker
-        run: node --test scripts/
+        run: node --test scripts/*.test.mjs
