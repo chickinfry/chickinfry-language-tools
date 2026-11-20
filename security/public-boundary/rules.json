@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "source": "Public-boundary rules for a public repository. The same rule classes as the release scanner: private repository names, private issue numbers, internal work-session identifiers, vendor names, and credential shapes.",
+  "allow": [
+    "scripts/check-public-boundary.mjs",
+    "scripts/check-public-boundary.test.mjs",
+    "security/public-boundary/rules.json"
+  ],
+  "rules": [
+    {
+      "id": "B4",
+      "kind": "body",
+      "pattern": "(?<![A-Za-z0-9_])chickinfry[/]platform(?![A-Za-z0-9_])",
+      "flags": [
+        "IGNORECASE"
+      ],
+      "basis": "Private control-plane repository reference."
+    },
+    {
+      "id": "B5",
+      "kind": "body",
+      "pattern": "(?<![A-Za-z0-9_])chickinfry(?:-js|-go|-rs|-py|-kt|-swift|-dart|-cli)?[-]internal(?![A-Za-z0-9_])",
+      "flags": [
+        "IGNORECASE"
+      ],
+      "basis": "Private SDK and CLI repository names."
+    },
+    {
+      "id": "B6",
+      "kind": "body",
+      "pattern": "claude[.]ai[.]?(?::[^/\\s<>\"']+)?/code/session",
+      "flags": [
+        "IGNORECASE"
+      ],
+      "basis": "Internal work-session URL."
+    },
+    {
+      "id": "B7",
+      "kind": "body",
+      "pattern": "Claude[-]Session:",
+      "flags": [
+        "IGNORECASE"
+      ],
+      "basis": "Internal work-session trailer."
+    },
+    {
+      "id": "B8",
+      "kind": "body",
+      "pattern": "(?<![A-Za-z0-9_])(?:linear[.]app|notion[.]so)/(?:[A-Za-z0-9_-]+/)?(?:issue|page)/[A-Za-z0-9_-]+",
+      "flags": [
+        "IGNORECASE"
+      ],
+      "basis": "Private tracker page."
+    },
+    {
+      "id": "B9",
+      "kind": "body",
+      "pattern": "(?<![A-Za-z0-9_.-])(?!(?:UTF|ISO|RFC|IEEE|ASCII|DOM|JSON|HTTP|TLS|IANA|ECMA|ANSI|IDNA|UCS|URI|URL|UUID|API|SDK|CLI|LSP|LF|CR|BOM|UBUNTU|MACOS|WINDOWS|PYTHON|NODE)[-][0-9])(?:[A-Z]{2,6}-[0-9]{1,5})(?![A-Za-z0-9_]|[.][0-9])",
+      "flags": [
+        "IGNORECASE"
+      ],
+      "basis": "Private tracker issue key such as an uppercase prefix and a number, excluding standard names and encodings."
+    },
+    {
+      "id": "B10",
+      "kind": "body",
+      "pattern": "(?<![A-Za-z0-9_])(?:cloudflare|workers|durable[\\s-]+objects?|hyperdrive|amazon[\\s]+ses|turnstile)(?![A-Za-z0-9_])",
+      "flags": [
+        "IGNORECASE"
+      ],
+      "basis": "Vendor name. The language does not name its implementation host."
+    },
+    {
+      "id": "B11",
+      "kind": "body",
+      "pattern": "-----BEGIN [A-Z ]*PRIVATE KEY-----|\\bgh[pousr]_[A-Za-z0-9]{20,}|\\bgithub_pat_[A-Za-z0-9_]{20,}|\\bsk-[A-Za-z0-9]{20,}|\\bAKIA[0-9A-Z]{16}\\b",
+      "flags": [
+        "IGNORECASE"
+      ],
+      "basis": "Credential shape."
+    },
+    {
+      "id": "B12",
+      "kind": "body",
+      "pattern": "\\bruns-on:\\s*\\[?\\s*self-hosted",
+      "flags": [
+        "IGNORECASE"
+      ],
+      "basis": "Self-hosted runner. This repository uses GitHub-hosted runners only."
+    }
+  ]
+}

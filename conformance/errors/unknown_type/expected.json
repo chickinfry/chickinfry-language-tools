@@ -1,0 +1,19 @@
+{
+  "diagnostics": [
+    {
+      "code": "chik_unknown_type",
+      "severity": "error",
+      "path": "types.Post.author",
+      "range": {
+        "start": {
+          "line": 2,
+          "column": 21
+        },
+        "end": {
+          "line": 2,
+          "column": 27
+        }
+      }
+    }
+  ]
+}

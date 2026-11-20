@@ -1,0 +1,19 @@
+{
+  "diagnostics": [
+    {
+      "code": "chik_cyclic_type",
+      "severity": "error",
+      "path": "types.Node",
+      "range": {
+        "start": {
+          "line": 2,
+          "column": 10
+        },
+        "end": {
+          "line": 2,
+          "column": 14
+        }
+      }
+    }
+  ]
+}

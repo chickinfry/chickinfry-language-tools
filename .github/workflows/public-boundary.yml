@@ -1,0 +1,26 @@
+name: Public boundary
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  boundary:
+    name: Public boundary
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Scan every commit
+        run: node scripts/check-public-boundary.mjs --history
+      - name: Test the boundary check
+        run: node --test scripts/check-public-boundary.test.mjs

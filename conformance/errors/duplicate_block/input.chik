@@ -1,0 +1,6 @@
+types {
+  Post = { id: id };
+}
+types {
+  Tag = { id: id };
+}

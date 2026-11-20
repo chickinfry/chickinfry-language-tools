@@ -1,0 +1,19 @@
+{
+  "diagnostics": [
+    {
+      "code": "chik_union_variant_count",
+      "severity": "error",
+      "path": "types.Event",
+      "range": {
+        "start": {
+          "line": 2,
+          "column": 11
+        },
+        "end": {
+          "line": 2,
+          "column": 16
+        }
+      }
+    }
+  ]
+}

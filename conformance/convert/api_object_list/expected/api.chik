@@ -1,0 +1,9 @@
+services {
+  probe {
+    operations {
+      list() -> {
+        rows: { id: id, name: string }[];
+      };
+    }
+  }
+}

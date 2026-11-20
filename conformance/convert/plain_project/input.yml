@@ -1,0 +1,6 @@
+project:
+  name: demo
+generation:
+  server:
+    language: typescript
+  clients: [typescript]

@@ -1,0 +1,7 @@
+services {
+  posts {
+    operations {
+      list() -> { rows: Post[] };
+    }
+  }
+}

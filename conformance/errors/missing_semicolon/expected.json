@@ -1,0 +1,19 @@
+{
+  "diagnostics": [
+    {
+      "code": "chik_expected_token",
+      "severity": "error",
+      "path": "types.Post",
+      "range": {
+        "start": {
+          "line": 2,
+          "column": 21
+        },
+        "end": {
+          "line": 2,
+          "column": 22
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+services {
+  probe {
+    operations {
+      echo(value: string) -> { value: string, at: timestamp };
+    }
+  }
+}

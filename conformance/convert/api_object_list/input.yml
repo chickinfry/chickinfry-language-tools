@@ -1,0 +1,10 @@
+services:
+  probe:
+    operations:
+      list:
+        output:
+          rows:
+            type: list
+            items:
+              id: {type: id}
+              name: {type: string}

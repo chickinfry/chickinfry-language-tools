@@ -1,0 +1,9 @@
+services:
+  probe:
+    operations:
+      echo:
+        input:
+          value: {type: string}
+        output:
+          value: {type: string}
+          at: {type: timestamp}

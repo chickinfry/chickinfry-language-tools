@@ -1,0 +1,5 @@
+types {
+  Event = union(kind) {
+    text: { text: string };
+  };
+}
