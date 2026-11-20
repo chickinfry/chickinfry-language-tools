@@ -37,7 +37,7 @@ A case directory contains no other files.
 {
   "diagnostics": [
     {
-      "code": "chik_expected_token",
+      "code": "CHK0101",
       "severity": "error",
       "path": "services.posts.operations",
       "range": {

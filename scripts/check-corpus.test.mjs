@@ -32,7 +32,7 @@ const base = {
   "errors/one/input.chik": "services {\n}\n",
   "errors/one/expected.json": JSON.stringify({
     diagnostics: [{
-      code: "chik_expected_token", severity: "error", path: "",
+      code: "CHK0101", severity: "error", path: "",
       range: { start: { line: 1, column: 1 }, end: { line: 1, column: 2 } },
     }],
   }, null, 2) + "\n",

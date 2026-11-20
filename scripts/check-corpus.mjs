@@ -52,7 +52,7 @@ function checkErrorOutput(path, label) {
   }
   for (const [index, entry] of document.diagnostics.entries()) {
     const where = label + " diagnostic " + index;
-    if (typeof entry.code !== "string" || !/^chik_[a-z_]+$/.test(entry.code)) fail(where + ": bad code");
+    if (typeof entry.code !== "string" || !/^CHK[0-9]{4}$/.test(entry.code)) fail(where + ": bad code");
     if (entry.severity !== "error") fail(where + ": severity must be error");
     if (typeof entry.path !== "string") fail(where + ": path must be a string");
     const range = entry.range;

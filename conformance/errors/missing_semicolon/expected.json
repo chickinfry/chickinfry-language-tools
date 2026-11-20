@@ -1,7 +1,7 @@
 {
   "diagnostics": [
     {
-      "code": "chik_expected_token",
+      "code": "CHK0101",
       "severity": "error",
       "path": "types.Post",
       "range": {

@@ -1,7 +1,7 @@
 {
   "diagnostics": [
     {
-      "code": "chik_union_variant_count",
+      "code": "CHK0306",
       "severity": "error",
       "path": "types.Event",
       "range": {

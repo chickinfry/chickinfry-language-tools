@@ -1,7 +1,7 @@
 {
   "diagnostics": [
     {
-      "code": "chik_cyclic_type",
+      "code": "CHK0302",
       "severity": "error",
       "path": "types.Node",
       "range": {

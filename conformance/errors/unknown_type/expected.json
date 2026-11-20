@@ -1,7 +1,7 @@
 {
   "diagnostics": [
     {
-      "code": "chik_unknown_type",
+      "code": "CHK0301",
       "severity": "error",
       "path": "types.Post.author",
       "range": {
