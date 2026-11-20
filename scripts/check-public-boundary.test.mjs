@@ -54,13 +54,20 @@ test("clean text passes", () => {
   }
 });
 
+// The probe strings are assembled at run time so that this file, which is
+// published, never contains the very text the rules forbid. A literal here
+// would trip the boundary scan on its own source.
+function probe(...parts) {
+  return parts.join("");
+}
+
 test("each rule class rejects its shape", () => {
   const cases = [
-    ["B4", "See chickinfry/platform for the plan.\n"],
-    ["B5", "The implementation lives in chickinfry-cli-internal.\n"],
-    ["B9", "Tracked as ABC-123.\n"],
-    ["B10", "Runs on durable objects.\n"],
-    ["B12", "    runs-on: self-hosted\n"],
+    ["B4", "See " + probe("chickinfry", "/", "platform") + " for the plan.\n"],
+    ["B5", "The implementation lives in " + probe("chickinfry-cli", "-", "internal") + ".\n"],
+    ["B9", "Tracked as " + probe("ABC", "-", "123") + ".\n"],
+    ["B10", "Runs on " + probe("durable", " ", "objects") + ".\n"],
+    ["B12", "    runs-on: " + probe("self", "-", "hosted") + "\n"],
   ];
   for (const [id, content] of cases) {
     const dir = fixture(content);
@@ -74,6 +81,13 @@ test("each rule class rejects its shape", () => {
   }
 });
 
+test("the allow list cannot exempt a whole test file", () => {
+  // An allow entry that covered a test file hid a real leak once. Only the
+  // rules file may be exempt, because it necessarily contains the patterns.
+  const config = JSON.parse(readFileSync(rules, "utf8"));
+  assert.deepEqual(config.allow, ["security/public-boundary/rules.json"],
+    "only the rules file may be exempt from the boundary scan");
+});
 test("standard names are not mistaken for tracker keys", () => {
   const dir = fixture("Files are UTF-8. Runs on ubuntu-24.04.\n");
   try {
