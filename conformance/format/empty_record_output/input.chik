@@ -1,7 +1,7 @@
 services {
   health {
     operations {
-      check() -> {};
+      check() -> {}
     }
   }
 }

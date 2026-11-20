@@ -11,7 +11,7 @@ an agent can read it and fix the file without parsing the human form.
 error[CHK0007]: unknown type `Post`
   --> chik/api.chik:4:21
    |
- 4 |       get(id: id) -> { post: Post };
+ 4 |       get(id: id) -> { post: Post }
    |                            ^^^^ not declared
    |
    = help: declare `types { Post = { ... }; }` or use a built-in type

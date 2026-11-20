@@ -1,0 +1,19 @@
+{
+  "diagnostics": [
+    {
+      "code": "CHK0302",
+      "severity": "error",
+      "path": "types.Node",
+      "range": {
+        "start": {
+          "line": 2,
+          "column": 18
+        },
+        "end": {
+          "line": 2,
+          "column": 22
+        }
+      }
+    }
+  ]
+}
