@@ -1,0 +1,144 @@
+==================
+types block
+==================
+
+types {
+  Post = { id: id, title: string };
+}
+
+---
+
+(source_file
+  (types_block
+    (type_declaration
+      name: (identifier)
+      (record
+        (field_list
+          (field name: (identifier) type: (primitive_type))
+          (field name: (identifier) type: (primitive_type)))))))
+
+==================
+services block with an addressed operation
+==================
+
+services {
+  posts {
+    operations {
+      public get(id: id) -> { post: Post } at GET "/v1/posts/{id}";
+    }
+  }
+}
+
+---
+
+(source_file
+  (services_block
+    (service
+      name: (identifier)
+      (operation
+        name: (identifier)
+        (parameter_list
+          (parameter name: (identifier) type: (primitive_type)))
+        (record
+          (field_list
+            (field name: (identifier) type: (identifier))))
+        (address method: (method) path: (string))))))
+
+==================
+union and modifiers
+==================
+
+types {
+  Event = union(kind) {
+    text: { body: string? };
+    items: { rows: string[] };
+  };
+}
+
+---
+
+(source_file
+  (types_block
+    (type_declaration
+      name: (identifier)
+      (union
+        tag: (identifier)
+        (variant
+          name: (identifier)
+          (record
+            (field_list
+              (field name: (identifier) type: (type_nullable
+                inner: (primitive_type))))))
+        (variant
+          name: (identifier)
+          (record
+            (field_list
+              (field name: (identifier) type: (type_list
+                element: (primitive_type))))))))))
+
+==================
+config blocks
+==================
+
+project {
+  name: "demo";
+  clients: ["go", "typescript"];
+  storage: { assets: "s3" };
+}
+
+auth {
+  signup: "open";
+  browser_session: false;
+  session: { idle_timeout_seconds: 2592000 };
+}
+
+---
+
+(source_file
+  (config_block
+    role: (block_role)
+    (config_entry name: (identifier) value: (config_value (string)))
+    (config_entry
+      name: (identifier)
+      value: (config_value
+        (config_list
+          (config_value (string))
+          (config_value (string)))))
+    (config_entry
+      name: (identifier)
+      value: (config_value
+        (config_record
+          (config_entry name: (identifier) value: (config_value (string)))))))
+  (config_block
+    role: (block_role)
+    (config_entry name: (identifier) value: (config_value (string)))
+    (config_entry name: (identifier) value: (config_value (boolean)))
+    (config_entry
+      name: (identifier)
+      value: (config_value
+        (config_record
+          (config_entry name: (identifier) value: (config_value (number))))))))
+
+==================
+comments are extras
+==================
+
+// leading
+services {
+  posts {
+    operations {
+      get() -> {}; /* trailing */
+    }
+  }
+}
+
+---
+
+(source_file
+  (line_comment)
+  (services_block
+    (service
+      name: (identifier)
+      (operation name: (identifier) (record))
+      (block_comment))))
+

@@ -1,0 +1,15 @@
+{
+  "name": "tree-sitter-chik",
+  "version": "0.0.1",
+  "description": "The .chik declaration language grammar",
+  "license": "Apache-2.0",
+  "keywords": ["tree-sitter", "parser", "chik"],
+  "files": ["grammar.js", "queries", "src/**/*.c", "src/**/*.h", "src/**/*.json", "tree-sitter.json"],
+  "scripts": {
+    "generate": "tree-sitter generate",
+    "test": "tree-sitter test"
+  },
+  "devDependencies": {
+    "tree-sitter-cli": "0.25.10"
+  }
+}
