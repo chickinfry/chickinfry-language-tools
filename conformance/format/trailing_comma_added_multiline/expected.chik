@@ -1,0 +1,6 @@
+project {
+  clients: [
+    "go",
+    "typescript",
+  ]
+}

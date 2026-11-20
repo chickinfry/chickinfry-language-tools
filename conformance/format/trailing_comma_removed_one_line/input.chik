@@ -1,0 +1,4 @@
+project {
+  clients: ["go", "typescript",]
+  capabilities: { control_plane: "platform/control-plane", }
+}

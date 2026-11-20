@@ -1,0 +1,4 @@
+project {
+  name: "acme"
+  capabilities: { control_plane: "platform/control-plane" }
+}
