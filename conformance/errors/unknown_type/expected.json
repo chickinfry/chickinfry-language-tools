@@ -1,17 +1,17 @@
 {
   "diagnostics": [
     {
-      "code": "CHK0601",
+      "code": "CHK0301",
       "severity": "error",
-      "path": "types",
+      "path": "types.Post.author",
       "range": {
         "start": {
-          "line": 1,
-          "column": 1
+          "line": 2,
+          "column": 20
         },
         "end": {
-          "line": 1,
-          "column": 6
+          "line": 2,
+          "column": 26
         }
       }
     }

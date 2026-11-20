@@ -1,0 +1,19 @@
+{
+  "diagnostics": [
+    {
+      "code": "CHK0201",
+      "severity": "error",
+      "path": "types.post",
+      "range": {
+        "start": {
+          "line": 2,
+          "column": 3
+        },
+        "end": {
+          "line": 2,
+          "column": 7
+        }
+      }
+    }
+  ]
+}

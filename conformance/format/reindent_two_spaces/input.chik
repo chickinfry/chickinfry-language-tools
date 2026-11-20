@@ -1,7 +1,7 @@
 services {
     posts {
         operations {
-            list() -> { rows: { id: id }[] };
+            list() -> { rows: { id: id }[] }
         }
     }
 }

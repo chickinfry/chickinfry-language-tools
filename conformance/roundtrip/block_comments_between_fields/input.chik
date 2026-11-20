@@ -1,0 +1,7 @@
+types {
+  Post = {
+    id: id, // identity
+    /* optional caption */
+    caption: string?,
+  }
+}

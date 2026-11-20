@@ -13,7 +13,7 @@ A project declares up to five role files under `chik/`:
 | `api.chik` | Types, services, and routes. |
 | `schema.chik` | The database profile and tables. |
 | `auth.chik` | Authentication policy. |
-| `project.chik` | Project name and generation targets. |
+| `project.chik` | Project name, generation targets, storage, vault, and the control-plane key. |
 | `clients.chik` | Named client applications. |
 
 Every file is UTF-8. A file may use either line ending, and a formatter
@@ -35,20 +35,20 @@ normalizes to LF.
 
 ```ebnf
 api        = [types], [services], [routes] ;
-types      = "types", "{", {type_decl, ";"}, "}" ;
-services   = "services", "{", {service, "}"}, "}" ;
-routes     = "routes", "{", {route, ";"}, "}" ;
+types      = "types", "{", {type_decl, [semi]}, "}" ;
+services   = "services", "{", {service}, "}" ;
+routes     = "routes", "{", {route, [semi]}, "}" ;
 
 type_decl  = TypeName, "=", (record | union) ;
-service    = name, "{", "operations", "{", {operation, ";"}, "}", "}" ;
+service    = name, "{", "operations", "{", {operation, [semi]}, "}", "}" ;
 operation  = ["public"], name, "(", [fields], ")", "->", record, ["at", method, path] ;
 route      = name, method, path ;
 
 fields     = field, {",", field}, [","] ;
 field      = name, ":", type ;
 record     = "{", [fields], "}" ;
-union      = "union", "(", name, ")", "{", variant, {variant}, "}" ;
-variant    = name, ":", record, ";" ;
+union      = "union", "(", name, ")", "{", variant, {variant, [semi]}, "}" ;
+variant    = name, ":", record ;
 
 type       = primary, {"[]" | "?"} ;
 primary    = "id" | "string" | "timestamp" | TypeName | record
@@ -58,9 +58,30 @@ primary    = "id" | "string" | "timestamp" | TypeName | record
 
 method     = "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD" | "OPTIONS" ;
 path       = string ;
+semi       = ";" ;
 ```
 
 `types`, `services`, and `routes` may each appear at most once per file.
+
+`->` separates an operation's parameters from its result. It is not a field
+colon: `title: string` declares a field, `get(...) -> ...` declares what an
+operation returns.
+
+## Separators
+
+The separators follow the Go style the decision fixed:
+
+- Inside a block, a line break ends an entry. Nothing else is required.
+- A construct may span lines inside `{ }`, `( )`, or `[ ]`. That is the only
+  place a line break does not end the construct.
+- Several items on one line separate with commas.
+- A semicolon is accepted where an entry ends. It is not part of the canonical
+  form: the formatter removes it, as `gofmt` does.
+- A trailing comma is accepted in a list, an object, or a parameter list. The
+  formatter keeps it when the construct spans lines and removes it when the
+  construct stays on one line.
+
+A comment line is not an item, so it takes no trailing comma.
 
 ## Types
 
@@ -120,8 +141,8 @@ as a direct operation output field.
 services {
   posts {
     operations {
-      public get(id: id) -> { post: Post } at GET "/v1/posts/{id}";
-      publish(id: id) -> { post: Post };
+      public get(id: id) -> { post: Post } at GET "/v1/posts/{id}"
+      publish(id: id) -> { post: Post }
     }
   }
 }
@@ -160,8 +181,8 @@ parameter, is a 400 at request time.
 
 ```text
 routes {
-  payment_webhook POST "/hooks/payment";
-  feed GET "/feed.xml";
+  payment_webhook POST "/hooks/payment"
+  feed GET "/feed.xml"
 }
 ```
 

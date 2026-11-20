@@ -13,12 +13,12 @@ describes it.
 
 ```text
 project {
-  name: "demo";
-  server: "typescript";
-  clients: ["go", "typescript"];
-  secrets: ["API_KEY"];
-  storage: { assets: "s3" };
-  vault: "chickinfry";
+  name: "demo"
+  server: "typescript"
+  clients: ["go", "typescript"]
+  secrets: ["API_KEY"]
+  storage: { assets: "s3" }
+  vault: "chickinfry"
 }
 ```
 
@@ -38,16 +38,16 @@ is not part of the YAML beta surface.
 
 ```text
 database {
-  profile: "postgresql";
+  profile: "postgresql"
   tables {
     posts {
       columns {
-        id: { type: id, primary_key: true, default: { kind: uuid } };
-        title: { type: string, default: { kind: string, literal: "Untitled" } };
-        author: { type: id, references: { auth: user } };
-        note: { type: string, nullable: true };
+        id: { type: id, primary_key: true, default: { kind: uuid } }
+        title: { type: string, default: { kind: string, literal: "Untitled" } }
+        author: { type: id, references: { auth: user } }
+        note: { type: string, nullable: true }
       }
-      primary_key: ["id"];
+      primary_key: ["id"]
       unique { by_email { columns: ["email"] } }
       foreign_keys {
         author { columns: ["author"], references: { table: "users", columns: ["id"] } }
@@ -73,15 +73,22 @@ A check predicate keeps the typed tree shape from YAML: `column`, `all`, `any`,
 
 ## api.chik
 
+A `types` block names a record so it can be reused. YAML has no way to name a
+record, and this is the one construct the beta adds: the wire shape is
+unchanged, so a generated client does not differ.
+
 ```text
+types {
+  Post = { id: id, title: string }
+}
 services {
   posts {
     operations {
-      get(id: id) -> { post: { id: id, title: string } };
+      get(id: id) -> { post: { id: id, title: string } }
       list() -> {
         rows: { id: id, title: string }[],
-      };
-      create(title: string, tags: string[]?) -> { id: id };
+      }
+      create(title: string, tags: string[]?) -> { id: id }
     }
   }
 }
@@ -94,14 +101,14 @@ map.
 
 ```text
 create(title: string, tag: { type: string, optional: true })
-  -> { id: id };
+  -> { id: id }
 ```
 
 ## clients.chik
 
 ```text
 clients {
-  web: { template: "typescript", api: "full" };
+  web: { template: "typescript", api: "full" }
 }
 ```
 
@@ -109,23 +116,43 @@ clients {
 
 ```text
 auth {
-  methods: ["email-password"];
-  origins: ["https://app.example.test"];
-  signup: "open";
-  browser_session: false;
-  session: { idle_timeout_seconds: 2592000 };
-  email: { verification: "required", transport: "platform" };
-  rate_limits: { signup: { signal: "email", max: 5, window_seconds: 60 } };
+  methods: ["email-password"]
+  origins: ["https://app.example.test"]
+  signup: "open"
+  browser_session: false
+  session: { idle_timeout_seconds: 2592000 }
+  email: { verification: "required", transport: "platform" }
+  rate_limits: { signup: { signal: "email", max: 5, window_seconds: 60 } }
 }
 ```
 
-## extensions.chik
+## The control-plane key
+
+`extensions.yml` is gone. The one thing it carried, `platform/control-plane`,
+moves into `project.chik` under a key named **`capabilities`**.
 
 ```text
-extensions {
-  platform_control_plane: "platform/control-plane";
+project {
+  name: "acme"
+  server: "typescript"
+  clients: ["typescript"]
+  capabilities: { control_plane: "platform/control-plane" }
 }
 ```
+
+Why this name:
+
+| Candidate | Verdict |
+| --- | --- |
+| `extensions` | Excluded by the decision, and the concept is retired. |
+| `plugins` | Suggests third-party code, which this is not. |
+| `features` | Reads as a toggle list, not a reviewed selection. |
+| `capabilities` | The design document already uses "capability" for a reviewed, provider-backed ability, and rejects an unsupported one by name. |
+
+The value is a name-keyed map, so two entries cannot collide, and a duplicate
+name is rejected. The name is the author's handle; the value is the reviewed
+identifier. A name that is not in the accepted set is refused with its
+position, exactly as YAML refuses an unknown capability.
 
 ## What the beta grammar does not include
 
@@ -138,11 +165,10 @@ extensions {
 | `union(kind)` | New capability. |
 | `json` | New capability. |
 | `map<string, T>` | New capability. |
-| Named types in `types` | New capability. |
 
-Named types, unions, and `Page` appear in the grammar draft because they are
-part of the language's direction. They are not beta requirements, and a beta
-implementation may reject them with a clear message rather than accept them
+Unions and `Page` appear in the grammar draft because they are part of the
+language's direction. They are not beta requirements, and a beta
+implementation refuses them with `CHK0601` rather than accepting them
 silently.
 
 ## Consequence for the corpus
