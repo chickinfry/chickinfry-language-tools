@@ -1,0 +1,39 @@
+<idea-plugin>
+    <id>dev.chickinfry.chik</id>
+    <name>Chik</name>
+    <vendor url="https://github.com/chickinfry/chickinfry-language-tools">Chickinfry</vendor>
+
+    <description><![CDATA[
+        Syntax highlighting and language server support for <code>.chik</code>,
+        the Chickinfry declaration language.
+        <br/>
+        Highlighting comes from a bundled TextMate grammar. Diagnostics, completion,
+        and navigation come from the <code>chik</code> binary, started as
+        <code>chik lsp --stdio</code>.
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lsp</depends>
+    <depends>com.intellij.modules.ultimate</depends>
+    <depends>org.jetbrains.plugins.textmate</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceImplementation="dev.chickinfry.chik.ChikSettings"/>
+        <projectConfigurable
+            instance="dev.chickinfry.chik.ChikConfigurable"
+            id="dev.chickinfry.chik.settings"
+            displayName="Chik"/>
+    </extensions>
+
+    <extensions defaultExtensionNs="com.intellij.platform.lsp">
+        <!-- Deprecated in 2026.1.4, but the only LSP entry point present in
+             every 2026.1 build. The newer integrationProvider would force
+             since-build 2026.2 on users of the current release. -->
+        <serverSupportProvider implementation="dev.chickinfry.chik.ChikLspServerSupportProvider"/>
+    </extensions>
+
+    <extensions defaultExtensionNs="org.jetbrains.plugins.textmate">
+        <bundleProvider implementation="dev.chickinfry.chik.ChikTextMateBundleProvider"/>
+    </extensions>
+</idea-plugin>
+

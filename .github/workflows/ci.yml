@@ -23,3 +23,82 @@ jobs:
         run: node scripts/check-corpus.mjs
       - name: Test the corpus checker
         run: node --test scripts/*.test.mjs
+
+  grammar:
+    name: Grammar
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install the tree-sitter CLI
+        working-directory: tree-sitter-chik
+        run: npm ci
+      - name: Regenerate the parser and fail on drift
+        working-directory: tree-sitter-chik
+        run: |
+          npx tree-sitter generate
+          git diff --exit-code -- src/
+      - name: Test the grammar
+        working-directory: tree-sitter-chik
+        run: npx tree-sitter test
+      - name: Parse the conformance corpus
+        run: node scripts/check-grammar.mjs
+      - name: Check the highlight queries
+        run: node scripts/check-highlights.mjs
+      - name: Parse the examples in spec/
+        run: node scripts/check-spec-examples.mjs
+
+  editors:
+    name: Editors
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Fail when an editor copy of the grammar is stale
+        run: node scripts/check-editors.mjs
+      - name: Install the extension dependencies
+        working-directory: editors/vscode
+        run: npm ci
+      - name: Compile the extension
+        working-directory: editors/vscode
+        run: npm run compile
+      - name: Test the server lookup
+        working-directory: editors/vscode
+        run: node --test out/test/*.test.js
+      - name: Test the TextMate grammar
+        working-directory: editors/vscode
+        run: node --test test/grammar.test.mjs
+      - name: Package the extension
+        working-directory: editors/vscode
+        run: npx vsce package --out chik.vsix
+
+  jetbrains:
+    name: JetBrains
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Compile the plugin
+        working-directory: editors/jetbrains
+        run: ./gradlew compileKotlin --no-daemon
+      - name: Test the plugin
+        working-directory: editors/jetbrains
+        run: ./gradlew test --no-daemon
+      - name: Verify the plugin structure
+        working-directory: editors/jetbrains
+        run: ./gradlew verifyPluginConfiguration --no-daemon
+
