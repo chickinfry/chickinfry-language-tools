@@ -1,0 +1,26 @@
+{
+  "grammars": [
+    {
+      "name": "chik",
+      "camelcase": "Chik",
+      "title": "Chik",
+      "scope": "source.chik",
+      "file-types": ["chik"],
+      "highlights": "queries/highlights.scm",
+      "injection-regex": "^chik$"
+    }
+  ],
+  "metadata": {
+    "version": "0.0.1",
+    "license": "Apache-2.0",
+    "description": "The .chik declaration language",
+    "authors": [
+      {
+        "name": "Chickinfry"
+      }
+    ],
+    "links": {
+      "repository": "https://github.com/chickinfry/chickinfry-language-tools"
+    }
+  }
+}

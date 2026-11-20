@@ -1,0 +1,74 @@
+{
+  "name": "chik",
+  "displayName": "Chik",
+  "description": "The .chik declaration language: highlighting and diagnostics.",
+  "version": "0.0.1",
+  "publisher": "chickinfry",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chickinfry/chickinfry-language-tools"
+  },
+  "engines": {
+    "vscode": "^1.91.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "keywords": [
+    "chik",
+    "chickinfry"
+  ],
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onLanguage:chik"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "chik",
+        "aliases": [
+          "Chik",
+          "chik"
+        ],
+        "extensions": [
+          ".chik"
+        ],
+        "configuration": "./syntaxes/language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "chik",
+        "scopeName": "source.chik",
+        "path": "./syntaxes/chik.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "title": "Chik",
+      "properties": {
+        "chik.server.path": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the chik binary. When empty, the extension looks for chik on PATH."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p .",
+    "test": "node --test out/test/*.test.js",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "vscode-languageclient": "11.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.2",
+    "@types/vscode": "1.91.0",
+    "@vscode/vsce": "4.1.1",
+    "typescript": "5.9.3",
+    "vscode-oniguruma": "^2.0.1",
+    "vscode-textmate": "^9.3.2"
+  }
+}

@@ -15,6 +15,8 @@ lives in the Chickinfry CLI so that `chik` stays a single binary.
 | `spec/` | The grammar, the type system, and the conformance corpus format. |
 | `conformance/` | Input and expected output pairs. This corpus is the specification in executable form. |
 | `scripts/` | Checks that keep the corpus well-formed. |
+| `tree-sitter-chik/` | The tree-sitter grammar and its highlight queries. |
+| `editors/` | The VS Code and JetBrains extensions. |
 
 ## The corpus is the specification
 
@@ -41,11 +43,29 @@ During the transition a project may use YAML or `.chik`. Converting YAML to
 ```sh
 node scripts/check-corpus.mjs
 node --test scripts/*.test.mjs
+node scripts/check-grammar.mjs
+node scripts/check-editors.mjs
+node scripts/check-spec-examples.mjs
+node scripts/check-keywords.mjs
 ```
 
 CI runs the same commands on GitHub-hosted runners. The first command checks
 the corpus structure; the second checks that the checker itself rejects broken
-cases. Neither runs an implementation.
+cases. `check-grammar.mjs` parses every corpus file with the tree-sitter
+grammar, and `check-editors.mjs` fails when an editor copy of the TextMate
+grammar drifts from `editors/textmate/`.
+`check-spec-examples.mjs` parses the `.chik` examples printed in `spec/`, so a
+copyable example cannot drift from the grammar.
+`check-keywords.mjs` compares the block keywords in the grammar, the highlight
+queries, the TextMate grammar, and the role file table in `spec/grammar.md`.
+
+The grammar and the editors are built in their own CI jobs:
+
+```sh
+cd tree-sitter-chik && npm ci && npx tree-sitter test
+cd editors/vscode && npm ci && npm run compile && node --test test/grammar.test.mjs
+cd editors/jetbrains && ./gradlew compileKotlin
+```
 
 ## Contributing
 
@@ -53,7 +73,14 @@ A case that an implementation disagrees with is a specification question. Open
 an issue describing the input, the expected output, and what the
 implementation does instead.
 
-## Not here yet
+## Editors
 
-The tree-sitter grammar and the editor extensions arrive with the first real
-grammar. Empty directories are not committed.
+`tree-sitter-chik/` is a tolerant grammar for highlighting: it decides where
+tokens and blocks begin and end, and leaves name casing, unknown types, and
+address overlap to the Go parser so a file with a semantic error still
+highlights.
+
+`editors/vscode/` and `editors/jetbrains/` both start the language server as
+`chik lsp --stdio` from the binary. They share one TextMate grammar in
+`editors/textmate/`, copied into each extension by
+`node scripts/sync-editors.mjs`. Neither extension is published yet.
