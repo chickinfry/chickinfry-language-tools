@@ -1,0 +1,4 @@
+{
+  "position": { "line": 6, "column": 20 },
+  "includes": ["Post", "id", "string", "timestamp"]
+}

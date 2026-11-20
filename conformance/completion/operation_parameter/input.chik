@@ -1,0 +1,11 @@
+types {
+  Post = { id: id, title: string }
+}
+
+services {
+  posts {
+    operations {
+      create(title: string) -> { id: id }
+    }
+  }
+}

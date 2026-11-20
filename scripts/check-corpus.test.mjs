@@ -39,6 +39,10 @@ const base = {
   "convert/one/input.yml": "services: {}\n",
   "convert/one/expected/api.chik": "services {\n}\n",
   "roundtrip/one/input.chik": "services {\n}\n",
+  "definition/one/input.chik": "types {\n  Post = { id: id }\n}\n",
+  "definition/one/expected.json": JSON.stringify({ position: { line: 2, column: 3 }, targets: [{ line: 2, column: 3 }] }, null, 2) + "\n",
+  "completion/one/input.chik": "types {\n  Post = { id: id }\n}\n",
+  "completion/one/expected.json": JSON.stringify({ position: { line: 2, column: 3 }, includes: ["Post"] }, null, 2) + "\n",
 };
 
 test("a complete corpus passes", () => {
