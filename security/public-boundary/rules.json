@@ -2,8 +2,6 @@
   "version": 1,
   "source": "Public-boundary rules for a public repository. The same rule classes as the release scanner: private repository names, private issue numbers, internal work-session identifiers, vendor names, and credential shapes.",
   "allow": [
-    "scripts/check-public-boundary.mjs",
-    "scripts/check-public-boundary.test.mjs",
     "security/public-boundary/rules.json"
   ],
   "rules": [
