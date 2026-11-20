@@ -21,6 +21,23 @@ appears in test output, so it should describe the behavior being pinned.
 when the conversion must be refused. In that case the YAML is readable but
 cannot be expressed in `.chik` without loss.
 
+## Beta scope and the later groups
+
+`conformance/` holds only cases inside the beta scope in
+[beta scope](beta-scope.md). Every case there is required: an implementation
+that cannot pass one is not ready.
+
+`later/` mirrors the same four groups and holds cases for grammar the language
+defines but the beta does not accept, such as a `routes` block, a named
+`types` declaration, a union, or `Page<T>`. Those cases are kept so the work is
+not lost. They are not part of the beta specification, and an implementation is
+not required to pass them.
+
+An implementation rejects a later-scope construct with `CHK0601` rather than
+accepting it silently. That refusal is what keeps a beta file portable: a
+declaration that parses today must parse in the next release too, and a
+construct the beta cannot generate for must fail where the author can see it.
+
 ## File rules
 
 Every file is UTF-8 with LF line endings and ends with exactly one newline.
@@ -61,6 +78,25 @@ A case directory contains no other files.
 Comparison ignores the human message. Two implementations may word the same
 problem differently, and a corpus that pinned wording would block an otherwise
 correct replacement. Message quality is reviewed in the implementation.
+
+## Cascading errors
+
+A lexical error makes the rest of the file unreliable: an unterminated string
+swallows the following lines, so the parser then reports missing tokens that
+are not the author's mistake.
+
+For that reason a case in `errors/` pins **the first diagnostic only**. An
+implementation must report that diagnostic first, at that position. It may
+report further diagnostics after it, and it may stop after the first; both are
+accepted. This keeps the corpus from pinning a particular recovery strategy.
+
+A case that needs to pin a later diagnostic, such as a semantic error, uses an
+input that has no earlier error.
+
+Within that first diagnostic, a lexical problem is reported before a
+syntactic one even when it starts later, because the syntactic report is its
+consequence. After the lexical stage, order is start position, then code.
+
 
 ## Format output
 

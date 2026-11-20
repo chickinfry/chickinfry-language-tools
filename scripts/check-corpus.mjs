@@ -16,6 +16,12 @@ const groups = {
   roundtrip: { required: ["input.chik"] },
 };
 
+// later/ holds cases for grammar the beta does not accept. They are kept so the
+// work is not lost, but they are not part of the beta specification and an
+// implementation is not required to pass them. The directory mirrors the four
+// beta groups.
+const laterGroups = ["format", "errors", "convert", "roundtrip"];
+
 const caseName = /^[a-z][a-z0-9_]*$/;
 const failures = [];
 
@@ -73,8 +79,12 @@ function checkErrorOutput(path, label) {
 }
 
 function checkCase(group, name) {
-  const dir = join(corpus, group, name);
-  const label = group + "/" + name;
+  return checkCaseIn(join(corpus, group), group, name);
+}
+
+function checkCaseIn(root, group, name) {
+  const dir = join(root, name);
+  const label = (root === corpus ? "" : "later/") + group + "/" + name;
   if (!caseName.test(name)) fail(label + ": case name is not lower_snake_case");
   const spec = groups[group];
   const entries = readdirSync(dir).sort();
@@ -132,6 +142,26 @@ for (const group of Object.keys(groups)) {
       continue;
     }
     checkCase(group, name);
+  }
+}
+
+// later/ mirrors the beta groups. Its cases are checked for shape so they stay
+// usable, but an implementation is not required to pass them.
+const laterRoot = join(corpus, "..", "later");
+for (const group of laterGroups) {
+  const dir = join(laterRoot, group);
+  let names;
+  try {
+    names = readdirSync(dir).sort();
+  } catch {
+    continue;
+  }
+  for (const name of names) {
+    if (!statSync(join(dir, name)).isDirectory()) {
+      fail("later/" + group + "/" + name + ": not a directory");
+      continue;
+    }
+    checkCaseIn(dir, group, name);
   }
 }
 

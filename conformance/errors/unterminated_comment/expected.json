@@ -1,0 +1,19 @@
+{
+  "diagnostics": [
+    {
+      "code": "CHK0004",
+      "severity": "error",
+      "path": "",
+      "range": {
+        "start": {
+          "line": 2,
+          "column": 3
+        },
+        "end": {
+          "line": 4,
+          "column": 1
+        }
+      }
+    }
+  ]
+}
