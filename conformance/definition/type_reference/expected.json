@@ -1,0 +1,12 @@
+{
+  "position": {
+    "line": 8,
+    "column": 24
+  },
+  "targets": [
+    {
+      "line": 2,
+      "column": 3
+    }
+  ]
+}
