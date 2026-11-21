@@ -42,7 +42,7 @@ database {
   tables {
     posts {
       columns {
-        id: { type: id, primary_key: true, default: { kind: uuid } }
+        id: { type: id, default: { kind: uuid } }
         title: { type: string, default: { kind: string, literal: "Untitled" } }
         author: { type: id, references: { auth: user } }
         note: { type: string, nullable: true }
@@ -66,6 +66,9 @@ database {
 Every YAML column key maps one to one: `type`, `primary_key`, `nullable`,
 `unique`, `references`, `default`. Table keys: `columns`, `primary_key`,
 `unique`, `foreign_keys`, `indexes`, `checks`.
+
+A column's `primary_key: true` and a table's `primary_key` list are two
+spellings of one declaration; write one of them, not both.
 
 A check predicate keeps the typed tree shape from YAML: `column`, `all`, `any`,
 `not`, `when`, `then`, `in`, `eq`, `ne`, `lt`, `lte`, `gt`, `gte`,
