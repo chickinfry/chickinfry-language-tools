@@ -1,0 +1,9 @@
+/* Posts. */
+services {
+  posts {
+    operations {
+      list() -> {}
+      get(id: id) -> {}
+    }
+  }
+}

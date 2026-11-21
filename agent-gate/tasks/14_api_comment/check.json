@@ -1,0 +1,10 @@
+{
+  "files": [
+    "chik/api.chik"
+  ],
+  "block": "services",
+  "fields": [
+    "get"
+  ],
+  "comment": "Reads one post."
+}

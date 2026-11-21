@@ -1,0 +1,11 @@
+{
+  "files": [
+    "chik/project.chik",
+    "chik/api.chik"
+  ],
+  "block": "project",
+  "fields": [
+    "name",
+    "server"
+  ]
+}

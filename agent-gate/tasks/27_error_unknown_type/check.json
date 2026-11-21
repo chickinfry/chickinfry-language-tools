@@ -1,0 +1,7 @@
+{
+  "files": [
+    "chik/api.chik"
+  ],
+  "block": "types",
+  "error": "CHK0301"
+}

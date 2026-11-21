@@ -1,0 +1,5 @@
+project {
+  name: "files"
+  server: "typescript"
+  storage: { assets: "s3" }
+}

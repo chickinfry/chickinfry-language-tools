@@ -1,0 +1,9 @@
+{
+  "files": [
+    "chik/api.chik"
+  ],
+  "block": "services",
+  "fields": [
+    "check"
+  ]
+}

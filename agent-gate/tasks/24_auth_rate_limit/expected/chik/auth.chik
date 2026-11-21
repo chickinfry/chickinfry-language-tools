@@ -1,0 +1,4 @@
+auth {
+  methods: ["email-password"]
+  rate_limits: { signup: { signal: "email", max: 5, window_seconds: 60 } }
+}

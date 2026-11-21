@@ -1,0 +1,3 @@
+clients {
+  web: { template: "typescript", api: "full" }
+}

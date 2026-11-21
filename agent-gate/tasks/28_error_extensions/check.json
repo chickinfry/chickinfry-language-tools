@@ -1,0 +1,7 @@
+{
+  "files": [
+    "chik/extensions.chik"
+  ],
+  "block": "extensions",
+  "error": "CHK0601"
+}

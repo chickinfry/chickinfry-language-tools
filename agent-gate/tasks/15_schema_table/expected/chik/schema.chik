@@ -1,0 +1,11 @@
+database {
+  profile: "postgresql"
+  tables {
+    posts {
+      columns {
+        id: { type: id, primary_key: true }
+        title: { type: string }
+      }
+    }
+  }
+}

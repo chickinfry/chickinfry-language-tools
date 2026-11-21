@@ -1,0 +1,5 @@
+auth {
+  methods: ["email-password"]
+  browser_session: true
+  session: { idle_timeout_seconds: 2592000 }
+}

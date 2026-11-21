@@ -1,0 +1,4 @@
+auth {
+  methods: ["email-password"]
+  signup: "open"
+}

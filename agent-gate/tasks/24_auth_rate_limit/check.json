@@ -1,0 +1,10 @@
+{
+  "files": [
+    "chik/auth.chik"
+  ],
+  "block": "auth",
+  "fields": [
+    "methods",
+    "rate_limits"
+  ]
+}

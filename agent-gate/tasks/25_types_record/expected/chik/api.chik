@@ -1,0 +1,3 @@
+types {
+  Post = { id: id, title: string }
+}

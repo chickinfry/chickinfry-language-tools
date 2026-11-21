@@ -1,0 +1,5 @@
+project {
+  name: "api"
+  server: "typescript"
+  secrets: ["API_KEY"]
+}

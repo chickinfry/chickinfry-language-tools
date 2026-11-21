@@ -1,0 +1,12 @@
+services {
+  posts {
+    operations {
+      list() -> {}
+    }
+  }
+  users {
+    operations {
+      list() -> {}
+    }
+  }
+}

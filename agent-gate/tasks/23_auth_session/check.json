@@ -1,0 +1,11 @@
+{
+  "files": [
+    "chik/auth.chik"
+  ],
+  "block": "auth",
+  "fields": [
+    "methods",
+    "browser_session",
+    "session"
+  ]
+}

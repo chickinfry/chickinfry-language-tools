@@ -1,0 +1,7 @@
+services {
+  events {
+    operations {
+      at(when: timestamp) -> { seen: timestamp }
+    }
+  }
+}
