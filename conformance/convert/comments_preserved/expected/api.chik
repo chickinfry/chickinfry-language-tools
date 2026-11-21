@@ -1,0 +1,9 @@
+// The blog service.
+services {
+  blog {
+    // One page of posts.
+    operations {
+      list_posts() -> { id: id }
+    }
+  }
+}
