@@ -132,6 +132,9 @@ auth {
 }
 ```
 
+Email verification that is required needs a place to send its link: declare
+exactly one origin, or declare `email.link_base` alongside it.
+
 ## The control-plane key
 
 `extensions.yml` is gone. The one thing it carried, `platform/control-plane`,
