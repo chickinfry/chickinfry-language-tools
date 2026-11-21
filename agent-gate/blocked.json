@@ -1,7 +1,4 @@
 {
-  "note": "These tasks follow the grammar, but the product cannot grade them today. Measured with a chik binary built from feat/234-chik-gate-fixes head 472ebba14ca832642ac6292a68d443d32c78e4c2 (base jabdori/chik-errors 426358267): the storage, vault, input-mapping, types-block, and extensions behaviors this file listed earlier are fixed there. Two tasks fail; the other twenty-eight pass. Tasks 09 and 12 now ask for the object-list form the YAML surface and the corpus case api_object_list express, because the earlier scalar-list answers passed only by the conversion silently dropping the list.",
-  "tasks": {
-    "07_api_id_input": "the normalized contract has no record kind: a nested output record has no YAML form, and every generator rejects an unknown field kind, so accepting it is a contract and generator decision rather than a conversion fix. The conversion now refuses the record where it was written.",
-    "13_api_nested_record": "the normalized contract has no record kind; the conversion refuses the nested record instead of narrowing it."
-  }
+  "note": "No task is blocked. Measured with a chik binary built from feat/234-chik-gate-fixes head 3018b877083e68d010dc6d8c630e0180ee6e4c74 (base jabdori/chik-errors 426358267): all thirty expected answers parse and check. A record outside a list item has no form in the YAML surface or the normalized contract, so tasks 07 and 13 use the contract's nested shape, an object list with a named record, and the spec examples were aligned to the same scope.",
+  "tasks": {}
 }

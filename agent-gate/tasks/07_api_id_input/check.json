@@ -5,6 +5,7 @@
   "block": "services",
   "fields": [
     "get",
-    "id"
+    "id",
+    "title"
   ]
 }

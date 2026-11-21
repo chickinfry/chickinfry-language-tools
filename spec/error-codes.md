@@ -35,7 +35,7 @@ and the range. Wording is not compared; see [error presentation](error-presentat
 | `CHK0403` | operations | path parameter | A path placeholder that does not match an input. |
 | `CHK0404` | operations | route overlap | Two addresses that would match the same request. |
 | `CHK0405` | operations | reserved service | A service name the platform owns. |
-| `CHK0501` | conversion | unsupported | A YAML declaration with no .chik form. |
+| `CHK0501` | conversion | unsupported | A declaration with no equivalent in the other surface. |
 | `CHK0502` | conversion | ambiguous | A YAML declaration that maps to more than one form. |
 | `CHK0601` | scope | outside beta | Grammar the language defines but the beta does not accept. |
 

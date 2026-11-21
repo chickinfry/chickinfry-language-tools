@@ -1,7 +1,10 @@
+types {
+  Post = { id: id, title: string }
+}
 services {
   posts {
     operations {
-      get() -> { post: { id: id, title: string } }
+      list() -> { rows: Post[] }
     }
   }
 }
