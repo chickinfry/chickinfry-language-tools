@@ -29,6 +29,12 @@ intellijPlatform {
         name = providers.gradleProperty("pluginName")
         version = providers.gradleProperty("pluginVersion")
 
+        // The Marketplace listing shows this text. It is read from the
+        // changelog so the published notes and the file cannot disagree.
+        changeNotes = providers.fileContents(
+            layout.projectDirectory.file("CHANGELOG.md"),
+        ).asText.map { it.lines().drop(2).joinToString("\n").trim() }
+
         ideaVersion {
             sinceBuild = providers.gradleProperty("pluginSinceBuild")
         }
