@@ -295,6 +295,22 @@
             "type": "SYMBOL",
             "name": "_type"
           }
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "FIELD",
+              "name": "optional",
+              "content": {
+                "type": "SYMBOL",
+                "name": "optional_modifier"
+              }
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
         }
       ]
     },
@@ -657,8 +673,28 @@
             "type": "SYMBOL",
             "name": "_type"
           }
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "FIELD",
+              "name": "optional",
+              "content": {
+                "type": "SYMBOL",
+                "name": "optional_modifier"
+              }
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
         }
       ]
+    },
+    "optional_modifier": {
+      "type": "STRING",
+      "value": "optional"
     },
     "address": {
       "type": "SEQ",

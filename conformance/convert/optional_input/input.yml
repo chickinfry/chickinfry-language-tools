@@ -1,0 +1,19 @@
+services:
+  posts:
+    operations:
+      create:
+        input:
+          title: {type: string}
+          subtitle: {type: string, optional: true}
+          cover: {type: string, nullable: true, optional: true}
+          tags:
+            type: list
+            optional: true
+            items:
+              id: {type: id}
+          meta:
+            type: list
+            items:
+              note: {type: string, optional: true}
+        output:
+          id: {type: id}

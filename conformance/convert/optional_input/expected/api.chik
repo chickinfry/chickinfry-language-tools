@@ -1,0 +1,7 @@
+services {
+  posts {
+    operations {
+      create(title: string, subtitle: string optional, cover: string? optional, tags: { id: id }[] optional, meta: { note: string optional }[]) -> { id: id }
+    }
+  }
+}

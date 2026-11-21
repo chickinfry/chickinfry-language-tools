@@ -19,6 +19,7 @@ project {
   secrets: ["API_KEY"]
   storage: { assets: "s3" }
   vault: "chickinfry"
+  realtime: "chickinfry"
 }
 ```
 
@@ -30,9 +31,16 @@ project {
 | `generation.clients` | `clients: ["..."]` |
 | `storage.<name>` | `storage: { name: "s3" }` |
 | `vault` | `vault: "chickinfry"` |
+| `realtime` | `realtime: "chickinfry"` |
 
-`realtime` is not in the beta: it is rejected by the current release build and
-is not part of the YAML beta surface.
+`realtime` is part of the beta grammar and sits inside the `project` block. Its
+value is the provider name. The feature itself keeps the release lock it has
+today: the grammar accepts the key, and a build without realtime enabled still
+refuses it at compile time.
+
+`realtime` takes a string now. When a provider needs per-provider settings the
+value widens to "string or object", and a file written with a string stays
+valid.
 
 ## schema.chik
 
@@ -100,9 +108,17 @@ later-release features. Input and output fields keep the YAML metadata
 map.
 
 ```text
-create(title: string, tag: { type: string, optional: true })
+create(title: string, subtitle: string optional, cover: string? optional)
   -> { id: id }
 ```
+
+`optional` is a word after the type. It means the caller may leave the field
+out. `T?` is a different marker: the value may be null and the field is still
+required, so `string? optional` means both. The word is not reserved, so a
+field may be named `optional`.
+
+`optional` applies to input fields. An output field is always present, so
+`optional` there is `CHK0303`.
 
 ## clients.chik
 

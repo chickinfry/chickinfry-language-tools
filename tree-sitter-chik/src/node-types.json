@@ -204,6 +204,16 @@
           }
         ]
       },
+      "optional": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "optional_modifier",
+            "named": true
+          }
+        ]
+      },
       "type": {
         "multiple": false,
         "required": true,
@@ -379,6 +389,16 @@
         "types": [
           {
             "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "optional": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "optional_modifier",
             "named": true
           }
         ]
@@ -864,6 +884,10 @@
   {
     "type": "operations",
     "named": false
+  },
+  {
+    "type": "optional_modifier",
+    "named": true
   },
   {
     "type": "project",

@@ -13,7 +13,7 @@ A project declares up to five role files under `chik/`:
 | `api.chik` | Types, services, and routes. |
 | `schema.chik` | The database profile and tables. |
 | `auth.chik` | Authentication policy. |
-| `project.chik` | Project name, generation targets, storage, vault, and the control-plane key. |
+| `project.chik` | Project name, generation targets, storage, vault, realtime, and the control-plane key. |
 | `clients.chik` | Named client applications. |
 
 Every file is UTF-8. A file may use either line ending, and a formatter
@@ -100,6 +100,14 @@ A comment line is not an item, so it takes no trailing comma.
 
 `T?` means the field is present and its value may be null. It does not mean
 the field may be omitted. An omitted required field is an error.
+
+`optional` written after a type means the caller may leave the field out. It is
+a separate marker from `?`, and the two combine: `string? optional` is a
+nullable field the caller may also omit. `optional` is a word in that position,
+not a reserved keyword, so a field may be named `optional`.
+
+`optional` applies to input fields only. An output field is always present, so
+`optional` there is `CHK0303`.
 
 `T[]` is a list. `string?[]` is a list of nullable strings.
 `string[]?` is a nullable list. `T[][]` is a list of lists. `T??` is an
