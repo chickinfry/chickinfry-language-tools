@@ -42,18 +42,20 @@ database {
   tables {
     posts {
       columns {
-        id: { type: id, primary_key: true, default: { kind: uuid } }
+        id: { type: id, default: { kind: uuid } }
         title: { type: string, default: { kind: string, literal: "Untitled" } }
+        slug: { type: string }
         author: { type: id, references: { auth: user } }
+        parent: { type: id }
         note: { type: string, nullable: true }
       }
       primary_key: ["id"]
-      unique { by_email { columns: ["email"] } }
+      unique { by_slug { columns: ["slug"] } }
       foreign_keys {
-        author { columns: ["author"], references: { table: "users", columns: ["id"] } }
+        parent { columns: ["parent"], references: { table: "posts", columns: ["id"] } }
       }
       indexes {
-        recent { columns: ["created_at"], unique: false }
+        by_parent { columns: ["parent"], unique: false }
       }
       checks {
         title_present { column: title, non_blank: true }
@@ -67,15 +69,21 @@ Every YAML column key maps one to one: `type`, `primary_key`, `nullable`,
 `unique`, `references`, `default`. Table keys: `columns`, `primary_key`,
 `unique`, `foreign_keys`, `indexes`, `checks`.
 
+A column's `primary_key: true` and a table's `primary_key` list are two
+spellings of one declaration; write one of them, not both.
+
 A check predicate keeps the typed tree shape from YAML: `column`, `all`, `any`,
 `not`, `when`, `then`, `in`, `eq`, `ne`, `lt`, `lte`, `gt`, `gte`,
 `is_null`, `non_blank`.
 
 ## api.chik
 
-A `types` block names a record so it can be reused. YAML has no way to name a
-record, and this is the one construct the beta adds: the wire shape is
-unchanged, so a generated client does not differ.
+A `types` block names a record so it can be reused as a list's item fields.
+YAML has no way to name a record, and this is the one construct the beta
+adds: the wire shape is unchanged, so a generated client does not differ.
+A record anywhere else — a field's type outside a list element, inline or
+named — has no form in the YAML surface or the normalized contract, and the
+conversion refuses it with the accepted alternatives in the diagnostic.
 
 ```text
 types {
@@ -84,11 +92,11 @@ types {
 services {
   posts {
     operations {
-      get(id: id) -> { post: { id: id, title: string } }
+      get(id: id) -> { id: id, title: string }
       list() -> {
-        rows: { id: id, title: string }[],
+        rows: Post[],
       }
-      create(title: string, tags: string[]?) -> { id: id }
+      create(title: string, tags: { name: string }[]?) -> { id: id }
     }
   }
 }
@@ -125,6 +133,9 @@ auth {
   rate_limits: { signup: { signal: "email", max: 5, window_seconds: 60 } }
 }
 ```
+
+Email verification that is required needs a place to send its link: declare
+exactly one origin, or declare `email.link_base` alongside it.
 
 ## The control-plane key
 
@@ -165,6 +176,8 @@ position, exactly as YAML refuses an unknown capability.
 | `union(kind)` | New capability. |
 | `json` | New capability. |
 | `map<string, T>` | New capability. |
+| A record outside a list item | The YAML form and the normalized contract have no record kind; widening both, the published schema, and every generator is a separate decision. |
+| A list whose element is not a record | The YAML surface declares object lists only. |
 
 Unions and `Page` appear in the grammar draft because they are part of the
 language's direction. They are not beta requirements, and a beta

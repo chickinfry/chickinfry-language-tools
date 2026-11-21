@@ -110,6 +110,9 @@ error.
 A record declares fields. A record used as a named type, a union variant, or a
 list element must declare at least one field. An operation input or output may
 be an empty record `{}`.
+A record as a field's type outside a list element is grammar the beta does
+not accept: the YAML surface and the normalized contract have no record kind,
+and the diagnostic names the accepted alternatives.
 
 ### Unions
 
@@ -141,8 +144,9 @@ as a direct operation output field.
 services {
   posts {
     operations {
-      public get(id: id) -> { post: Post } at GET "/v1/posts/{id}"
-      publish(id: id) -> { post: Post }
+      public get(id: id) -> { id: id, title: string } at GET "/v1/posts/{id}"
+      publish(id: id) -> { id: id }
+      list() -> { rows: Post[] }
     }
   }
 }

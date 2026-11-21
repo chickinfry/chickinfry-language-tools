@@ -1,21 +1,4 @@
 {
-  "note": "These tasks are correct against the corpus, but chik check cannot grade them today. Each entry names the product behavior that stops it, measured with a chik binary built from the CLI #507 head 1fc59162 (base jabdori/chik-errors 426358267). Sixteen tasks fail; the other fourteen pass.",
-  "tasks": {
-    "04_project_storage": "chik check rejects storage in project.chik: the .chik to YAML step writes storage under generation, and the compiler reads it at the top level.",
-    "05_project_vault": "chik check rejects vault in project.chik for the same reason: the .chik to YAML step writes it where the compiler does not read it.",
-    "07_api_id_input": "chik check rejects a nested output record: get() -> { post: { id: id } } fails with unknown field id.",
-    "09_api_nullable_list": "chik check rejects the same nested output shape used by the corpus case api_object_list.",
-    "13_api_nested_record": "chik check rejects a nested output record with unknown field title.",
-    "16_schema_nullable": "chik check requires an explicit table primary_key, so a nullable column case cannot stand alone.",
-    "17_schema_default": "chik check requires an explicit table primary_key.",
-    "18_schema_two_tables": "chik check requires an explicit table primary_key on each table.",
-    "19_clients_one": "chik check requires the project to list typescript when clients.chik declares any client.",
-    "20_clients_two": "chik check requires the project to list typescript when clients.chik declares any client.",
-    "21_auth_email": "chik check requires auth.email.link_base or exactly one origin when email verification is on.",
-    "23_auth_session": "chik check requires a PostgreSQL database and a TypeScript server for browser_session.",
-    "24_auth_rate_limit": "chik check requires auth.email.link_base or exactly one origin when email verification is on.",
-    "25_types_record": "chik check rejects a types block: the .chik to YAML step has no YAML form for it, so the corpus case types_block is refused too.",
-    "26_types_two": "chik check rejects a types block for the same reason.",
-    "28_error_extensions": "chik check never reads chik/extensions.chik: the role list it scans has no extensions entry, so the retired block is skipped and the expected CHK0601 is not reported."
-  }
+  "note": "No task is blocked. Measured with a chik binary built from the pending conversion-fix CLI head on 2026-11-21: all thirty expected answers parse and check. A record outside a list item has no form in the YAML surface or the normalized contract, so tasks 07 and 13 use the contract's nested shape, an object list with a named record, and the spec examples were aligned to the same scope.",
+  "tasks": {}
 }
