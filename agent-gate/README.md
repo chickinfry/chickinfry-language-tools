@@ -3,8 +3,8 @@
 Thirty tasks that measure whether an agent can write `.chik` declarations from
 the skill and the documentation alone. The user confirmed the gate on
 2026-11-21: thirty tasks, at least 90% passing on the first attempt, and 100%
-within two attempts. The pass verdict is taken on the Claude and GPT model
-families; GLM and DeepSeek runs are reference measurements.
+within two attempts. The pass verdict is taken on the confirmed primary model
+families; runs on the reference families do not count toward the threshold.
 
 Nothing here runs an agent. It defines the tasks, the expected result, and a
 grader that judges a submission with the same tools a customer has: the
