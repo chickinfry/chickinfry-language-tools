@@ -53,11 +53,11 @@
     {
       "id": "B9",
       "kind": "body",
-      "pattern": "(?<![A-Za-z0-9_.-])(?!(?:UTF|ISO|RFC|IEEE|ASCII|DOM|JSON|HTTP|TLS|IANA|ECMA|ANSI|IDNA|UCS|URI|URL|UUID|API|SDK|CLI|LSP|LF|CR|BOM|UBUNTU|MACOS|WINDOWS|PYTHON|NODE)[-][0-9])(?:[A-Z]{2,6}-[0-9]{1,5})(?![A-Za-z0-9_]|[.][0-9])",
+      "pattern": "(?<![A-Za-z0-9_.-])(?!(?:UTF|ISO|RFC|IEEE|ASCII|DOM|JSON|HTTP|TLS|IANA|ECMA|ANSI|IDNA|UCS|URI|URL|UUID|API|SDK|CLI|LSP|LF|CR|BOM|UBUNTU|MACOS|WINDOWS|PYTHON|NODE|BSD|MIT|ISC|ZLIB|CC|GPL|LGPL|AGPL|MPL|EPL|APACHE)[-][0-9])(?:[A-Z]{2,6}-[0-9]{1,5})(?![A-Za-z0-9_]|[.][0-9])",
       "flags": [
         "IGNORECASE"
       ],
-      "basis": "Private tracker issue key such as an uppercase prefix and a number, excluding standard names and encodings."
+      "basis": "Private tracker issue key such as an uppercase prefix and a number, excluding standard names, encodings, and license identifiers."
     },
     {
       "id": "B10",

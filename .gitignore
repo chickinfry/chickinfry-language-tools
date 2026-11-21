@@ -1,3 +1,14 @@
 node_modules/
 *.log
 .DS_Store
+
+# Editor build output. The VS Code extension compiles to out/ and packages a
+# .vsix; the JetBrains plugin has Gradle's build directories.
+editors/vscode/out/
+editors/vscode/*.vsix
+editors/jetbrains/build/
+editors/jetbrains/.gradle/
+editors/jetbrains/.intellijPlatform/
+editors/jetbrains/.kotlin/
+
+

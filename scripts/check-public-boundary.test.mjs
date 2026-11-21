@@ -89,9 +89,45 @@ test("the allow list cannot exempt a whole test file", () => {
     "only the rules file may be exempt from the boundary scan");
 });
 test("standard names are not mistaken for tracker keys", () => {
-  const dir = fixture("Files are UTF-8. Runs on ubuntu-24.04.\n");
+  const dir = fixture("Files are UTF-8. Runs on ubuntu-24.04. Licensed BSD-2-Clause and MIT-0.\n");
   try {
     assert.equal(run(dir).status, 0);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("a build directory outside editors/ is still scanned", () => {
+  // The editors/ exemption must not become a general escape hatch: a build
+  // directory at the root holds generated text too, and it must be scanned.
+  const dir = mkdtempSync(join(tmpdir(), "chik-boundary-"));
+  try {
+    mkdirSync(join(dir, "scripts"), { recursive: true });
+    mkdirSync(join(dir, "security/public-boundary"), { recursive: true });
+    mkdirSync(join(dir, "build"), { recursive: true });
+    writeFileSync(join(dir, "security/public-boundary/rules.json"), readFileSync(rules));
+    mkdirSync(join(dir, "build"), { recursive: true });
+    writeFileSync(join(dir, "build/generated.txt"), "Tracked as " + probe("ABC", "-", "123") + ".\n");
+    // The real checker takes the repository root as an argument.
+    const result = spawnSync(process.execPath, [script, dir + "/"], { encoding: "utf8" });
+    assert.notEqual(result.status, 0, "a root build/ directory must still be scanned");
+    assert.match(result.stdout + result.stderr, /B9/);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("editor build output under editors/ is skipped", () => {
+  // The exemption exists because the IDE SDK unpacked there contains strings
+  // shaped like tracker keys. It must apply to editors/, and only there.
+  const dir = mkdtempSync(join(tmpdir(), "chik-boundary-"));
+  try {
+    mkdirSync(join(dir, "security/public-boundary"), { recursive: true });
+    mkdirSync(join(dir, "editors/jetbrains/build"), { recursive: true });
+    writeFileSync(join(dir, "security/public-boundary/rules.json"), readFileSync(rules));
+    writeFileSync(join(dir, "editors/jetbrains/build/generated.txt"), "Tracked as " + probe("ABC", "-", "123") + ".\n");
+    const result = spawnSync(process.execPath, [script, dir + "/"], { encoding: "utf8" });
+    assert.equal(result.status, 0, result.stdout + result.stderr);
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

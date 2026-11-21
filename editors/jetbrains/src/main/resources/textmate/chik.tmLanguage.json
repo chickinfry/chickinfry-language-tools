@@ -1,0 +1,151 @@
+{
+  "name": "Chik",
+  "scopeName": "source.chik",
+  "fileTypes": ["chik"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#block-keywords" },
+    { "include": "#type-declaration" },
+    { "include": "#operation" },
+    { "include": "#section" },
+    { "include": "#method" },
+    { "include": "#numbers" },
+    { "include": "#booleans" },
+    { "include": "#field" },
+    { "include": "#punctuation" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.chik",
+          "match": "//.*$"
+        },
+        {
+          "name": "comment.block.chik",
+          "begin": "/\\*",
+          "end": "\\*/"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.chik",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            { "name": "constant.character.escape.chik", "match": "\\\\[\"\\\\/bfnrt]" },
+            { "name": "constant.character.escape.chik", "match": "\\\\u[0-9a-fA-F]{4}" }
+          ]
+        }
+      ]
+    },
+    "block-keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.chik",
+          "match": "\\b(types|services|routes|operations|union|public|at)\\b"
+        },
+        {
+          "name": "keyword.other.role.chik",
+          "match": "\\b(project|database|auth|clients)\\b"
+        }
+      ]
+    },
+    "type-declaration": {
+      "patterns": [
+        {
+          "match": "^\\s*([A-Za-z_][A-Za-z0-9_]*)\\s*=",
+          "captures": {
+            "1": { "name": "entity.name.type.chik" }
+          }
+        },
+        {
+          "match": "^\\s*([a-z_][a-z0-9_]*)\\s*:\\s*\\{",
+          "captures": {
+            "1": { "name": "entity.name.type.variant.chik" }
+          }
+        }
+      ]
+    },
+    "operation": {
+      "patterns": [
+        {
+          "match": "\\b([a-z_][a-z0-9_]*)\\s*\\(",
+          "captures": {
+            "1": { "name": "entity.name.function.chik" }
+          }
+        }
+      ]
+    },
+    "section": {
+      "patterns": [
+        {
+          "match": "^\\s*([a-z_][a-z0-9_]*)\\s*\\{\\s*$",
+          "captures": {
+            "1": { "name": "entity.name.section.chik" }
+          }
+        }
+      ]
+    },
+    "field": {
+      "patterns": [
+        {
+          "match": "\\b([A-Za-z_][A-Za-z0-9_]*)\\s*:\\s*((?!true\\b|false\\b)[A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "variable.other.property.chik" },
+            "2": { "name": "support.type.chik" }
+          }
+        },
+        {
+          "match": "\\b([A-Za-z_][A-Za-z0-9_]*)\\s*:",
+          "captures": {
+            "1": { "name": "variable.other.property.chik" }
+          }
+        }
+      ]
+    },
+    "method": {
+      "patterns": [
+        {
+          "name": "constant.language.method.chik",
+          "match": "\\b(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\\b"
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.chik",
+          "match": "\\b-?[0-9]+(\\.[0-9]+)?\\b"
+        }
+      ]
+    },
+    "booleans": {
+      "patterns": [
+        {
+          "name": "constant.language.boolean.chik",
+          "match": "\\b(true|false)\\b"
+        }
+      ]
+    },
+    "punctuation": {
+      "patterns": [
+        {
+          "name": "punctuation.separator.chik",
+          "match": "->"
+        },
+        {
+          "name": "punctuation.section.chik",
+          "match": "[{}\\[\\]()<>]"
+        },
+        {
+          "name": "punctuation.separator.chik",
+          "match": "[:,;=?]"
+        }
+      ]
+    }
+  }
+}

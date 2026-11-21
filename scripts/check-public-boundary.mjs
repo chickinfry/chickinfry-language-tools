@@ -43,6 +43,13 @@ function check(relative, text) {
 function walk(dir) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     if (entry.name === ".git" || entry.name === "node_modules") continue;
+    // Editor build output under editors/ is git-ignored, so it never ships,
+    // and the IDE SDK it unpacks contains strings that look like tracker
+    // keys. Only these names below editors/ are skipped; a build/ directory
+    // anywhere else is still scanned.
+    const fromRoot = dir.slice(root.length).replace(/^[\\/]/, "");
+    if (fromRoot.startsWith("editors/") &&
+        ["build", ".gradle", ".intellijPlatform", ".kotlin", "out"].includes(entry.name)) continue;
     const path = join(dir, entry.name);
     const info = statSync(path);
     if (info.isSymbolicLink()) {

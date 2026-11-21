@@ -1,0 +1,25 @@
+{
+  "name": "chik",
+  "displayName": "Chik",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.91.0"
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "chik",
+        "aliases": ["Chik", "chik"],
+        "extensions": [".chik"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "chik",
+        "scopeName": "source.chik",
+        "path": "./chik.tmLanguage.json"
+      }
+    ]
+  }
+}
