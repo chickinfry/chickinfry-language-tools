@@ -1,12 +1,11 @@
 {
-  "note": "These tasks are correct against the corpus, but chik check cannot grade them today. Each entry names the product behavior that stops it, measured with a release binary built from main f4ff719.",
+  "note": "These tasks are correct against the corpus, but chik check cannot grade them today. Each entry names the product behavior that stops it, measured with a chik binary built from the CLI #507 head 1fc59162 (base jabdori/chik-errors 426358267). Sixteen tasks fail; the other fourteen pass.",
   "tasks": {
     "04_project_storage": "chik check rejects storage in project.chik: the .chik to YAML step writes storage under generation, and the compiler reads it at the top level.",
     "05_project_vault": "chik check rejects vault in project.chik for the same reason: the .chik to YAML step writes it where the compiler does not read it.",
     "07_api_id_input": "chik check rejects a nested output record: get() -> { post: { id: id } } fails with unknown field id.",
     "09_api_nullable_list": "chik check rejects the same nested output shape used by the corpus case api_object_list.",
     "13_api_nested_record": "chik check rejects a nested output record with unknown field title.",
-    "15_schema_table": "chik check rejects a table whose primary key is declared only by the column flag.",
     "16_schema_nullable": "chik check requires an explicit table primary_key, so a nullable column case cannot stand alone.",
     "17_schema_default": "chik check requires an explicit table primary_key.",
     "18_schema_two_tables": "chik check requires an explicit table primary_key on each table.",
@@ -17,7 +16,6 @@
     "24_auth_rate_limit": "chik check requires auth.email.link_base or exactly one origin when email verification is on.",
     "25_types_record": "chik check rejects a types block: the .chik to YAML step has no YAML form for it, so the corpus case types_block is refused too.",
     "26_types_two": "chik check rejects a types block for the same reason.",
-    "28_error_extensions": "chik check reports the mixed YAML and .chik error before the parser code, so CHK0601 is not reachable through this command.",
-    "30_comments_and_order": "chik check rejects this file for the nested output reason, since the fixture uses a record output."
+    "28_error_extensions": "chik check never reads chik/extensions.chik: the role list it scans has no extensions entry, so the retired block is skipped and the expected CHK0601 is not reported."
   }
 }
