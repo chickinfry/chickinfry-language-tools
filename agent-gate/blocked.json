@@ -1,23 +1,14 @@
 {
-  "note": "These tasks are correct against the corpus, but chik check cannot grade them today. Each entry names the product behavior that stops it, measured with a release binary built from main f4ff719.",
+  "note": "These tasks are correct against the corpus, but chik check cannot grade them today. Measured with a binary built from the CLI stack (feat/234-chik-convert c933d5c2 plus jabdori/chik-errors). The first pass scored 14/30; eight of the failures were the task's own expected answers, not the product, and were fixed. The remaining eight are product behavior.",
   "tasks": {
     "04_project_storage": "chik check rejects storage in project.chik: the .chik to YAML step writes storage under generation, and the compiler reads it at the top level.",
     "05_project_vault": "chik check rejects vault in project.chik for the same reason: the .chik to YAML step writes it where the compiler does not read it.",
     "07_api_id_input": "chik check rejects a nested output record: get() -> { post: { id: id } } fails with unknown field id.",
     "09_api_nullable_list": "chik check rejects the same nested output shape used by the corpus case api_object_list.",
     "13_api_nested_record": "chik check rejects a nested output record with unknown field title.",
-    "15_schema_table": "chik check rejects a table whose primary key is declared only by the column flag.",
-    "16_schema_nullable": "chik check requires an explicit table primary_key, so a nullable column case cannot stand alone.",
-    "17_schema_default": "chik check requires an explicit table primary_key.",
-    "18_schema_two_tables": "chik check requires an explicit table primary_key on each table.",
-    "19_clients_one": "chik check requires the project to list typescript when clients.chik declares any client.",
-    "20_clients_two": "chik check requires the project to list typescript when clients.chik declares any client.",
-    "21_auth_email": "chik check requires auth.email.link_base or exactly one origin when email verification is on.",
-    "23_auth_session": "chik check requires a PostgreSQL database and a TypeScript server for browser_session.",
-    "24_auth_rate_limit": "chik check requires auth.email.link_base or exactly one origin when email verification is on.",
+    "15_schema_table": "The .chik to YAML step writes a table-level primary_key list as a mapping with an empty key, so YAML refuses the file before the compiler sees it.",
     "25_types_record": "chik check rejects a types block: the .chik to YAML step has no YAML form for it, so the corpus case types_block is refused too.",
     "26_types_two": "chik check rejects a types block for the same reason.",
-    "28_error_extensions": "chik check reports the mixed YAML and .chik error before the parser code, so CHK0601 is not reachable through this command.",
-    "30_comments_and_order": "chik check rejects this file for the nested output reason, since the fixture uses a record output."
+    "28_error_extensions": "chik check ignores chik/extensions.chik: it is not one of the role files it reads, so the corpus case extensions_block_is_retired never reaches CHK0601."
   }
 }

@@ -3,6 +3,7 @@ database {
   tables {
     notes {
       columns {
+        id: { type: id, primary_key: true }
         body: { type: string, nullable: true }
       }
     }
