@@ -3,12 +3,12 @@ database {
   tables {
     posts {
       columns {
-        id: { type: id, primary_key: true }
+        id: { type: id }
       }
     }
     users {
       columns {
-        id: { type: id, primary_key: true }
+        id: { type: id }
       }
     }
   }

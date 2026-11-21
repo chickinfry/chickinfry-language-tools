@@ -1,5 +1,4 @@
 auth {
   methods: ["email-password"]
-  origins: ["https://app.example.test"]
   rate_limits: { signup: { signal: "email", max: 5, window_seconds: 60 } }
 }

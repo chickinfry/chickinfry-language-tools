@@ -3,7 +3,7 @@ database {
   tables {
     posts {
       columns {
-        id: { type: id, primary_key: true, default: { kind: uuid } }
+        id: { type: id, default: { kind: uuid } }
       }
     }
   }

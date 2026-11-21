@@ -1,6 +1,5 @@
 auth {
   methods: ["email-password"]
-  origins: ["https://app.example.test"]
   browser_session: true
   session: { idle_timeout_seconds: 2592000 }
 }
