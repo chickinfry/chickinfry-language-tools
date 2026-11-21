@@ -1,0 +1,11 @@
+services {
+  blog {
+    operations {
+      create_post(title: string, body: string) -> { id: id }
+      list_posts(cursor: string) -> {
+        posts: { id: id, title: string, published_at: timestamp }[],
+        next_cursor: string,
+      }
+    }
+  }
+}

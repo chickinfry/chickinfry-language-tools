@@ -1,0 +1,20 @@
+services:
+  blog:
+    operations:
+      list_posts:
+        input:
+          cursor: {type: string}
+        output:
+          posts:
+            type: list
+            items:
+              id: {type: id}
+              title: {type: string}
+              published_at: {type: timestamp}
+          next_cursor: {type: string}
+      create_post:
+        input:
+          title: {type: string}
+          body: {type: string}
+        output:
+          id: {type: id}

@@ -1,0 +1,21 @@
+services:
+  chat:
+    operations:
+      send_message:
+        input:
+          room_id: {type: id}
+          text: {type: string}
+        output:
+          message_id: {type: id}
+      list_messages:
+        input:
+          room_id: {type: id}
+          cursor: {type: string}
+        output:
+          messages:
+            type: list
+            items:
+              id: {type: id}
+              text: {type: string}
+              sent_at: {type: timestamp}
+          next_cursor: {type: string}

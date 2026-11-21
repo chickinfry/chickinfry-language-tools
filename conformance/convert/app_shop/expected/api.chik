@@ -1,0 +1,11 @@
+services {
+  shop {
+    operations {
+      create_order(product_id: id, quantity: string) -> { order_id: id }
+      list_products(cursor: string) -> {
+        products: { id: id, name: string, price_minor: string }[],
+        next_cursor: string,
+      }
+    }
+  }
+}
