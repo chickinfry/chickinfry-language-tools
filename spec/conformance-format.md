@@ -15,6 +15,8 @@ appears in test output, so it should describe the behavior being pinned.
 | `errors/` | `input.chik`, `expected.json` | Parsing the input fails with exactly the expected diagnostics. |
 | `convert/` | `input.yml`, `expected/<name>.chik` | Converting YAML produces the named `.chik` files. |
 | `roundtrip/` | `input.chik` | Formatting the input returns the input unchanged. |
+| `definition/` | `input.chik`, `expected.json` | Go-to-definition from a position resolves to the declarations listed. |
+| `completion/` | `input.chik`, `expected.json` | Completion at a position offers at least the listed labels. |
 | `invalid/` | `reason.md` | The corpus entry itself is wrong. A checker must reject it. |
 
 `convert/` may also carry `expected/reason.md` instead of `expected/*.chik`
@@ -78,6 +80,48 @@ A case directory contains no other files.
 Comparison ignores the human message. Two implementations may word the same
 problem differently, and a corpus that pinned wording would block an otherwise
 correct replacement. Message quality is reviewed in the implementation.
+
+## Definition output
+
+A `definition/` case pins a cursor and what it resolves to. The same rule as
+the error format applies to positions: 1-based, columns in code points.
+
+```json
+{
+  "position": { "line": 7, "column": 24 },
+  "targets": [
+    { "line": 2, "column": 3 }
+  ]
+}
+```
+
+- `position` is the cursor. A client sends a zero-based UTF-16 position; the
+  corpus stays in the same code-point unit as every other position, and the
+  implementation converts once at its protocol boundary.
+- `targets` lists the declaration starts the name resolves to. It is empty
+  when the name is not declared, which is the correct answer for a typo and
+  not an error.
+- Order is by file, then by position. A single-file case has at most one entry
+  unless the same name is declared twice.
+
+## Completion output
+
+A `completion/` case pins a cursor and the labels that must appear there.
+
+```json
+{
+  "position": { "line": 6, "column": 20 },
+  "includes": ["Post", "id", "string", "timestamp"]
+}
+```
+
+- `includes` is a lower bound. A server may offer more labels, and a client
+  filters as the user types, so pinning the full list would forbid a better
+  completion set.
+- Every listed label must appear. A missing one is a failure.
+
+Both groups live in `conformance/` only. A definition or completion case
+cannot be later scope: it asks what the parser already knows.
 
 ## Cascading errors
 

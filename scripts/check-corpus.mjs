@@ -14,6 +14,8 @@ const groups = {
   errors: { required: ["input.chik", "expected.json"] },
   convert: { required: ["input.yml"], expectedDir: "expected" },
   roundtrip: { required: ["input.chik"] },
+  definition: { required: ["input.chik", "expected.json"] },
+  completion: { required: ["input.chik", "expected.json"] },
 };
 
 // later/ holds cases for grammar the beta does not accept. They are kept so the
@@ -82,6 +84,64 @@ function checkCase(group, name) {
   return checkCaseIn(join(corpus, group), group, name);
 }
 
+// A definition case pins one cursor position and the declarations it resolves
+// to. Line and column are 1-based code points, the same as the error format, so
+// an implementation converts once for both.
+function checkDefinitionOutput(path, label) {
+  let document;
+  try {
+    document = JSON.parse(read(path));
+  } catch (error) {
+    fail(label + ": is not JSON: " + error.message);
+    return;
+  }
+  const position = document.position;
+  if (!position || !Number.isInteger(position.line) || !Number.isInteger(position.column)) {
+    fail(label + ": needs a position with an integer line and column");
+  } else if (position.line < 1 || position.column < 1) {
+    fail(label + ": position is 1-based, so line and column must be at least 1");
+  }
+  if (!Array.isArray(document.targets)) {
+    fail(label + ": targets must be an array, empty when the name is not a declaration");
+    return;
+  }
+  for (const [index, target] of document.targets.entries()) {
+    if (!Number.isInteger(target.line) || !Number.isInteger(target.column) || target.line < 1 || target.column < 1) {
+      fail(label + " target " + index + ": line and column are 1-based integers");
+    }
+  }
+  if (Object.hasOwn(document, "message")) fail(label + ": message is not compared and must be omitted");
+}
+
+// A completion case pins a cursor position and the labels an implementation
+// must offer there. Only the listed labels are required: a server may offer
+// more, and a client filters as the user types.
+function checkCompletionOutput(path, label) {
+  let document;
+  try {
+    document = JSON.parse(read(path));
+  } catch (error) {
+    fail(label + ": is not JSON: " + error.message);
+    return;
+  }
+  const position = document.position;
+  if (!position || !Number.isInteger(position.line) || !Number.isInteger(position.column)) {
+    fail(label + ": needs a position with an integer line and column");
+  } else if (position.line < 1 || position.column < 1) {
+    fail(label + ": position is 1-based, so line and column must be at least 1");
+  }
+  if (!Array.isArray(document.includes) || document.includes.length === 0) {
+    fail(label + ": includes must list at least one required label");
+    return;
+  }
+  for (const [index, required] of document.includes.entries()) {
+    if (typeof required !== "string" || required.length === 0) {
+      fail(label + " include " + index + ": must be a non-empty string");
+    }
+  }
+  if (Object.hasOwn(document, "message")) fail(label + ": message is not compared and must be omitted");
+}
+
 function checkCaseIn(root, group, name) {
   const dir = join(root, name);
   const label = (root === corpus ? "" : "later/") + group + "/" + name;
@@ -100,7 +160,11 @@ function checkCaseIn(root, group, name) {
       continue;
     }
     checkTextFile(path, label + "/" + entry);
-    if (entry === "expected.json") checkErrorOutput(path, label + "/" + entry);
+    if (entry === "expected.json") {
+      if (group === "definition") checkDefinitionOutput(path, label + "/" + entry);
+      else if (group === "completion") checkCompletionOutput(path, label + "/" + entry);
+      else checkErrorOutput(path, label + "/" + entry);
+    }
   }
   if (spec.expectedDir) {
     const expectedDir = join(dir, spec.expectedDir);
