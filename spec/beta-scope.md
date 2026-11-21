@@ -44,16 +44,18 @@ database {
       columns {
         id: { type: id, default: { kind: uuid } }
         title: { type: string, default: { kind: string, literal: "Untitled" } }
+        slug: { type: string }
         author: { type: id, references: { auth: user } }
+        parent: { type: id }
         note: { type: string, nullable: true }
       }
       primary_key: ["id"]
-      unique { by_email { columns: ["email"] } }
+      unique { by_slug { columns: ["slug"] } }
       foreign_keys {
-        author { columns: ["author"], references: { table: "users", columns: ["id"] } }
+        parent { columns: ["parent"], references: { table: "posts", columns: ["id"] } }
       }
       indexes {
-        recent { columns: ["created_at"], unique: false }
+        by_parent { columns: ["parent"], unique: false }
       }
       checks {
         title_present { column: title, non_blank: true }
