@@ -1,0 +1,10 @@
+database {
+  profile: "postgresql"
+  tables {
+    posts {
+      columns {
+        id: { type: id, default: { kind: uuid } }
+      }
+    }
+  }
+}

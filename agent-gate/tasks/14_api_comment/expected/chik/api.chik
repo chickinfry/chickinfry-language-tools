@@ -1,0 +1,8 @@
+services {
+  posts {
+    operations {
+      // Reads one post.
+      get() -> {}
+    }
+  }
+}

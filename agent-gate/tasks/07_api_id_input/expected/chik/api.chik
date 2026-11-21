@@ -1,0 +1,7 @@
+services {
+  posts {
+    operations {
+      get(id: id) -> { post: { id: id } }
+    }
+  }
+}

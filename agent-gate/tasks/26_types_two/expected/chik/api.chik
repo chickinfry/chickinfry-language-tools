@@ -1,0 +1,4 @@
+types {
+  Post = { id: id }
+  Author = { id: id }
+}

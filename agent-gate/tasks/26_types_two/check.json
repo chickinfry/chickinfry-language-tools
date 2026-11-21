@@ -1,0 +1,10 @@
+{
+  "files": [
+    "chik/api.chik"
+  ],
+  "block": "types",
+  "fields": [
+    "Post",
+    "Author"
+  ]
+}

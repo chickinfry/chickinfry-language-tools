@@ -1,0 +1,10 @@
+{
+  "files": [
+    "chik/schema.chik"
+  ],
+  "block": "database",
+  "fields": [
+    "columns",
+    "default"
+  ]
+}

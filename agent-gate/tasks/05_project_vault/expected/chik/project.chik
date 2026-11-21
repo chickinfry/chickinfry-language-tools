@@ -1,0 +1,5 @@
+project {
+  name: "vaulted"
+  server: "typescript"
+  vault: "chickinfry"
+}

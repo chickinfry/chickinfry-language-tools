@@ -1,0 +1,15 @@
+database {
+  profile: "postgresql"
+  tables {
+    posts {
+      columns {
+        id: { type: id }
+      }
+    }
+    users {
+      columns {
+        id: { type: id }
+      }
+    }
+  }
+}

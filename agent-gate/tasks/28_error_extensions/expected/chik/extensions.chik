@@ -1,0 +1,3 @@
+extensions {
+  platform_control_plane: "platform/control-plane"
+}
