@@ -142,3 +142,39 @@ services {
       (operation name: (identifier) (record))
       (block_comment))))
 
+==================
+optional input modifier
+==================
+
+services {
+  posts {
+    operations {
+      create(title: string, subtitle: string optional, cover: string? optional) -> { id: id };
+    }
+  }
+}
+
+---
+
+(source_file
+  (services_block
+    (service
+      name: (identifier)
+      (operation
+        name: (identifier)
+        (parameter_list
+          (parameter
+            name: (identifier)
+            type: (primitive_type))
+          (parameter
+            name: (identifier)
+            type: (primitive_type)
+            optional: (optional_modifier))
+          (parameter
+            name: (identifier)
+            type: (type_nullable
+              inner: (primitive_type))
+            optional: (optional_modifier)))
+        (record
+          (field_list
+            (field name: (identifier) type: (primitive_type))))))))

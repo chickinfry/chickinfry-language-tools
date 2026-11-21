@@ -1,0 +1,5 @@
+project {
+  name: "chat"
+  server: "typescript"
+  realtime: "chickinfry"
+}

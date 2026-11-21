@@ -71,6 +71,7 @@ module.exports = grammar({
       field("name", $.identifier),
       ":",
       field("type", $._type),
+      optional(field("optional", $.optional_modifier)),
     ),
 
     _type: $ => choice(
@@ -129,7 +130,15 @@ module.exports = grammar({
       field("name", $.identifier),
       ":",
       field("type", $._type),
+      // `optional` is a word after the type, not a reserved keyword, so a
+      // field named optional still parses. It marks an input the caller may
+      // omit, which is a different thing from the nullable `?` modifier.
+      optional(field("optional", $.optional_modifier)),
     ),
+
+    // A named node so an editor can highlight the marker and a test can prove
+    // the word was consumed rather than left trailing.
+    optional_modifier: _ => "optional",
 
     address: $ => seq(
       "at",
