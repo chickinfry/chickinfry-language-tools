@@ -1,8 +1,10 @@
 # Agent gate
 
 Thirty tasks that measure whether an agent can write `.chik` declarations from
-the skill and the documentation alone. This directory is the proposal; the task
-count and the pass threshold are the coordinator's, and the user confirms them.
+the skill and the documentation alone. The user confirmed the gate on
+2026-11-21: thirty tasks, at least 90% passing on the first attempt, and 100%
+within two attempts. The pass verdict is taken on the Claude and GPT model
+families; GLM and DeepSeek runs are reference measurements.
 
 Nothing here runs an agent. It defines the tasks, the expected result, and a
 grader that judges a submission with the same tools a customer has: the
@@ -28,6 +30,10 @@ comparing text:
    them from the parsed tree, so formatting, comments, and field order do not
    matter.
 3. A task that asks for a refusal must be refused with the named code.
+
+Tasks the published tools cannot grade yet are listed in `blocked.json` with
+the product behavior that stops them. The list is re-measured with the binary
+named in its note and shrinks as those behaviors are fixed.
 
 ## Why text comparison is not used
 
