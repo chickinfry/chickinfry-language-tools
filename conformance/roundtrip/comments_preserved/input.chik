@@ -3,7 +3,7 @@ services {
   posts {
     operations {
       // Reads one post.
-      get(id: id) -> { post: { id: id } }; /* trailing */
+      get(id: id) -> { post: { id: id } } /* trailing */
     }
   }
 }

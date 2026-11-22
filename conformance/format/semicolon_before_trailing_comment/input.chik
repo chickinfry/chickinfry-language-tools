@@ -1,0 +1,9 @@
+// Project services.
+services {
+  posts {
+    operations {
+      // Reads one post.
+      get(id: id) -> { post: { id: id } }; /* trailing */
+    }
+  }
+}
