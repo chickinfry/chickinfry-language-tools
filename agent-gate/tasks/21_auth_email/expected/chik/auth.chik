@@ -1,4 +1,5 @@
 auth {
   methods: ["email-password"]
+  origins: ["https://app.example.test"]
   signup: "open"
 }

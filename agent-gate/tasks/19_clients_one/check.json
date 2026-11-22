@@ -1,5 +1,6 @@
 {
   "files": [
+    "chik/project.chik",
     "chik/clients.chik"
   ],
   "block": "clients",

@@ -4,8 +4,9 @@
   ],
   "block": "services",
   "fields": [
-    "get",
-    "post",
+    "Post",
+    "list",
+    "rows",
     "title"
   ]
 }

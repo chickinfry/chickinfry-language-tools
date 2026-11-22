@@ -21,6 +21,8 @@ jobs:
           node-version: "24"
       - name: Check the corpus is well formed
         run: node scripts/check-corpus.mjs
+      - name: Check the agent gate is self-consistent
+        run: node scripts/check-agent-gate.mjs
       - name: Test the corpus checker
         run: node --test scripts/*.test.mjs
 
