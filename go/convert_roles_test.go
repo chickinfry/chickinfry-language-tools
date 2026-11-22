@@ -35,8 +35,7 @@ func TestConvertEveryRoleParses(t *testing.T) {
     api: full
 `,
 	}
-	// extensions.yml is retired by CHIK-ROLES, so it is not a role. Convert
-	// refuses it and ConvertExtensions moves it into project.chik.
+	// Legacy extensions are migrated into project.chik as capabilities.
 	if _, diagnostics := Convert("extensions", []byte("extensions:\n  - id: platform/control-plane\n")); len(diagnostics) == 0 {
 		t.Fatal("Convert accepted the retired extensions role")
 	}

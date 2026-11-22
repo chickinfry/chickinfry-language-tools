@@ -357,9 +357,7 @@ func convertClients(mapping *yaml.Node) (string, []Diagnostic) {
 // convertExtensions renders the extension list as a named map, which is the
 // form the role example proposes.
 // ConvertExtensions moves an extensions.yml selection into the capabilities key
-// of project.chik. The file is retired by CHIK-ROLES, so it is not one of the
-// five role files and Convert refuses it. The result is a project.chik fragment
-// the caller merges rather than a standalone document.
+// of project.chik. It returns a fragment to merge into the project declaration.
 func ConvertExtensions(data []byte) (string, []Diagnostic) {
 	var root yaml.Node
 	if err := yaml.Unmarshal(data, &root); err != nil {
