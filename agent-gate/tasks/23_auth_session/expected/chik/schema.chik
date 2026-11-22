@@ -1,0 +1,10 @@
+database {
+  profile: "postgresql"
+  tables {
+    records {
+      columns {
+        id: { type: id, primary_key: true, default: { kind: uuid } }
+      }
+    }
+  }
+}

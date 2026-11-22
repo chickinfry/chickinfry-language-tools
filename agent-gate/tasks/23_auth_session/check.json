@@ -1,5 +1,7 @@
 {
   "files": [
+    "chik/project.chik",
+    "chik/schema.chik",
     "chik/auth.chik"
   ],
   "block": "auth",
