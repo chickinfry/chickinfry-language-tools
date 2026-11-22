@@ -37,7 +37,7 @@ and the range. Wording is not compared; see [error presentation](error-presentat
 | `CHK0405` | operations | reserved service | A service name the platform owns. |
 | `CHK0501` | conversion | unsupported | A declaration with no equivalent in the other surface. |
 | `CHK0502` | conversion | ambiguous | A YAML declaration that maps to more than one form. |
-| `CHK0601` | scope | outside beta | Grammar the language defines but the beta does not accept. |
+| `CHK0601` | scope | outside alpha | Grammar the language defines but the alpha does not accept. |
 
 ## Ranges
 
