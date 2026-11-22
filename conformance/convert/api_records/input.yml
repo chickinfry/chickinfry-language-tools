@@ -1,0 +1,21 @@
+services:
+  posts:
+    operations:
+      save:
+        input:
+          post:
+            type: object
+            fields:
+              title: {type: string}
+              author: {type: object, fields: {display_name: {type: string}}}
+        output:
+          post:
+            type: object
+            fields:
+              title: {type: string}
+              author: {type: object, fields: {display_name: {type: string}}}
+          rows:
+            type: list
+            items:
+              title: {type: string}
+              author: {type: object, fields: {display_name: {type: string}}}

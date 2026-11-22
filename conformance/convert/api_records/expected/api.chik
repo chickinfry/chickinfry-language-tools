@@ -1,0 +1,10 @@
+services {
+  posts {
+    operations {
+      save(post: { title: string, author: { display_name: string } }) -> {
+        post: { title: string, author: { display_name: string } },
+        rows: { title: string, author: { display_name: string } }[],
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+types {
+  Author = { display_name: string }
+  Post = { title: string, author: Author }
+}
+services {
+  posts {
+    operations {
+      save(post: Post) -> { post: Post, rows: Post[] }
+    }
+  }
+}
