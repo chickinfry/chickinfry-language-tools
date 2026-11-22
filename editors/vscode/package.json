@@ -7,7 +7,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/chickinfry/chickinfry-language-tools"
+    "url": "https://github.com/chickinfry/chik-lang"
   },
   "engines": {
     "vscode": "^1.91.0"
