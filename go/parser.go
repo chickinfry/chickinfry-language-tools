@@ -532,7 +532,8 @@ func (p *parser) typeDecl(path string) *Node {
 		node.Range = nodeRange(start, p.at())
 		return node
 	}
-	node.Children = p.typeExpr(path+"."+start.Text, false)
+	// Retain modifiers until the checker knows where the type is used.
+	node.Children = p.typeExpr(path+"."+start.Text, true)
 	p.endEntry(path + "." + start.Text)
 	node.Range = nodeRange(start, p.at())
 	return node

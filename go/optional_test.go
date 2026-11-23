@@ -14,6 +14,7 @@ func TestOptionalIsAnInputModifier(t *testing.T) {
 		{"nullable", "services {\n  s {\n    operations {\n      o(a: string? optional) -> {}\n    }\n  }\n}\n"},
 		{"list", "services {\n  s {\n    operations {\n      o(a: { b: string }[] optional) -> {}\n    }\n  }\n}\n"},
 		{"nested input", "services {\n  s {\n    operations {\n      o(a: { rows: { title: string optional }[] }) -> {}\n    }\n  }\n}\n"},
+		{"named input", "types {\n  Post = { author: { title: string optional } }\n}\nservices {\n  s {\n    operations {\n      o(a: Post) -> {}\n    }\n  }\n}\n"},
 	}
 	for _, test := range cases {
 		t.Run(test.name, func(t *testing.T) {
@@ -56,6 +57,39 @@ func TestOptionalOnOutputIsRejected(t *testing.T) {
 				t.Fatalf("diagnostic = %+v, want %s on optional at %s (%+v)", diagnostic, CodeInvalidModifier, test.path, wantRange)
 			}
 		})
+	}
+}
+
+func TestOptionalNamedRecordsAreRejectedAtOutputUse(t *testing.T) {
+	source := `types {
+  Post = { author: Author }
+  Author = { title: string optional }
+}
+services {
+  s {
+    operations {
+      direct(a: Author) -> { a: Author }
+      nested(a: Post) -> { envelope: { rows: Post[] } }
+    }
+  }
+}
+`
+	file := Parse("chik/api.chik", source)
+	want := []struct {
+		path string
+		at   Range
+	}{
+		{"services.s.direct.a", Range{Start: Pos{Line: 8, Column: 33}, End: Pos{Line: 8, Column: 39}}},
+		{"services.s.nested.envelope.rows", Range{Start: Pos{Line: 9, Column: 46}, End: Pos{Line: 9, Column: 50}}},
+	}
+	if len(file.Diagnostics) != len(want) {
+		t.Fatalf("diagnostics = %+v, want a diagnostic for each output type use", file.Diagnostics)
+	}
+	for index, diagnostic := range file.Diagnostics {
+		expected := want[index]
+		if diagnostic.Code != CodeInvalidModifier || diagnostic.Path != expected.path || diagnostic.Range != expected.at {
+			t.Errorf("diagnostic = %+v, want %s at %s (%+v)", diagnostic, CodeInvalidModifier, expected.path, expected.at)
+		}
 	}
 }
 

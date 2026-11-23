@@ -13,8 +13,8 @@ var (
 // builtinTypes are the types a declaration may name without declaring them.
 var builtinTypes = map[string]bool{"id": true, "string": true, "timestamp": true, "json": true}
 
-// Check runs the checks that need the whole file: name case, unknown types,
-// and cycles. It returns the diagnostics in source order.
+// Check validates names, references, cycles, and modifiers that depend on
+// where a named type is used.
 func Check(file *File) []Diagnostic {
 	c := &checker{file: file, declared: map[string]bool{}, position: map[string]Token{}}
 	c.collect()
@@ -84,20 +84,28 @@ func (c *checker) names() {
 	}
 }
 
-// types resolves every named reference and rejects a cycle.
+// types resolves named references, checks for cycles, and validates output uses.
 func (c *checker) types() {
 	graph := map[string][]string{}
-	var walk func(node *Node)
-	walk = func(node *Node) {
+	optionalTypes := map[string]bool{}
+	var outputRefs []*Node
+	var walk func(node *Node, output bool)
+	walk = func(node *Node, output bool) {
+		output = output || node.Kind == NodeResult
+		if node.Optional && c.currentType != "" {
+			optionalTypes[c.currentType] = true
+		}
 		if node.Kind == NodeTypeRef && !builtinTypes[node.Name] && !isKeywordType(node.Name) {
 			if !c.declared[node.Name] {
 				c.report(CodeUnknownType, node.Path, node, "unknown type")
 			} else if current := c.currentType; current != "" {
 				graph[current] = append(graph[current], node.Name)
+			} else if output {
+				outputRefs = append(outputRefs, node)
 			}
 		}
 		for _, child := range node.Children {
-			walk(child)
+			walk(child, output)
 		}
 	}
 	for _, block := range c.file.Root.Children {
@@ -106,34 +114,47 @@ func (c *checker) types() {
 			for _, decl := range block.Children {
 				c.currentType = decl.Name
 				for _, child := range decl.Children {
-					walk(child)
+					walk(child, false)
 				}
 			}
 		case NodeServicesBlock:
 			// An operation names types too, and an unknown one must not wait for
 			// the generator to fail.
 			c.currentType = ""
-			walk(block)
+			walk(block, false)
 		}
 	}
 	c.currentType = ""
 	for name := range graph {
-		if reachable(graph, name, name, map[string]bool{}) {
+		if reachable(graph, name, func(next string) bool { return next == name }, map[string]bool{}) {
 			c.report(CodeCyclicType, "types."+name, nil, "a named type cannot refer to itself")
+		}
+	}
+	if len(optionalTypes) == 0 {
+		return
+	}
+	for _, ref := range outputRefs {
+		hasOptional, checked := optionalTypes[ref.Name]
+		if !checked {
+			hasOptional = reachable(graph, ref.Name, func(next string) bool { return optionalTypes[next] }, map[string]bool{})
+			optionalTypes[ref.Name] = hasOptional
+		}
+		if hasOptional {
+			c.reportAt(CodeInvalidModifier, ref.Path, ref.Range, "this type has optional fields and can only be used as input")
 		}
 	}
 }
 
-func reachable(graph map[string][]string, from, target string, seen map[string]bool) bool {
+func reachable(graph map[string][]string, from string, matches func(string) bool, seen map[string]bool) bool {
 	for _, next := range graph[from] {
-		if next == target {
+		if matches(next) {
 			return true
 		}
 		if seen[next] {
 			continue
 		}
 		seen[next] = true
-		if reachable(graph, next, target, seen) {
+		if reachable(graph, next, matches, seen) {
 			return true
 		}
 	}
@@ -178,8 +199,7 @@ func (c *checker) report(code, path string, node *Node, message string) {
 	})
 }
 
-// reportAt reports at an explicit range, for a diagnostic whose position is the
-// declaration name rather than the first token of a value.
+// reportAt reports a diagnostic at an explicit source range.
 func (c *checker) reportAt(code, path string, at Range, message string) {
 	c.diags = append(c.diags, Diagnostic{Code: code, Severity: "error", Path: path, Message: message, Range: at})
 }
