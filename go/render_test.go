@@ -1,8 +1,13 @@
 package chiklang
 
 import (
+	"os"
+	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
+
+	"go.yaml.in/yaml/v3"
 )
 
 // TestUnknownEntryIsRefusedNotDropped keeps a misspelled or unsupported field
@@ -153,56 +158,48 @@ func TestScalarListIsRefusedNotNarrowed(t *testing.T) {
 	}
 }
 
-// TestInlineRecordOutsideListItemIsRefused keeps a nested record output from
-// being rendered as field metadata the compiler rejects as unknown fields:
-// the YAML surface has no record kind, so the refusal says so where the
-// record was written.
-func TestInlineRecordOutsideListItemIsRefused(t *testing.T) {
-	source := "services {\n  posts {\n    operations {\n      get(id: id) -> { post: { id: id } }\n    }\n  }\n}\n"
-	file := Parse("chik/api.chik", source)
-	if len(file.Diagnostics) != 0 {
-		t.Fatalf("diagnostics: %+v", file.Diagnostics)
-	}
-	_, err := ToYAML(file)
-	if err == nil || !strings.Contains(err.Error(), "an inline record has no YAML form outside a list item; flatten its fields") {
-		t.Fatalf("a bare record output must be refused with its reason: %v", err)
-	}
-}
-
-// TestNamedRecordOutsideListItemIsRefusedAtTheUse keeps the refusal on the
-// line the author can fix: the use names the type, so the message points
-// there instead of at the declaration, and names what the surface accepts.
-func TestNamedRecordOutsideListItemIsRefusedAtTheUse(t *testing.T) {
-	source := "types {\n  Post = { id: id }\n}\nservices {\n  posts {\n    operations {\n      get() -> { post: Post }\n    }\n  }\n}\n"
-	file := Parse("chik/api.chik", source)
-	if len(file.Diagnostics) != 0 {
-		t.Fatalf("diagnostics: %+v", file.Diagnostics)
-	}
-	_, err := ToYAML(file)
-	if err == nil || !strings.Contains(err.Error(), "Post has no YAML form outside a list item; use it as a list's item type") {
-		t.Fatalf("a named record in field position must be refused at its use with the alternative: %v", err)
-	}
-	if !strings.Contains(err.Error(), "chik/api.chik:7:") {
-		t.Fatalf("the refusal must point at the use, not the declaration:\n%v", err)
-	}
-}
-
-// TestNamedRecordExpandsInListItem keeps a types block usable in the list
-// position the YAML surface expresses: the named record expands into the list
-// item fields.
-func TestNamedRecordExpandsInListItem(t *testing.T) {
-	source := "types {\n  Post = { id: id, title: string }\n}\nservices {\n  posts {\n    operations {\n      list() -> { rows: Post[] }\n    }\n  }\n}\n"
-	file := Parse("chik/api.chik", source)
-	if len(file.Diagnostics) != 0 {
-		t.Fatalf("diagnostics: %+v", file.Diagnostics)
-	}
-	data, err := ToYAML(file)
+func TestRecordsRenderAsYAML(t *testing.T) {
+	root := filepath.Join(corpusRoot(t), "conformance")
+	want, err := os.ReadFile(filepath.Join(root, "convert", "api_records", "input.yml"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := "rows: {type: list, items: {id: {type: id}, title: {type: string}}}"
-	if !strings.Contains(string(data), want) {
-		t.Fatalf("converted YAML lacks %q:\n%s", want, data)
+	for _, test := range []struct {
+		name string
+		path string
+	}{
+		{"inline", filepath.Join(root, "convert", "api_records", "expected", "api.chik")},
+		{"named", filepath.Join(root, "roundtrip", "named_records", "input.chik")},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			source, err := os.ReadFile(test.path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			assertRenderedYAML(t, "api", string(source), want)
+		})
+	}
+}
+
+func assertRenderedYAML(t *testing.T, role, source string, want []byte) {
+	t.Helper()
+	file := Parse("chik/"+role+".chik", source)
+	if len(file.Diagnostics) != 0 {
+		t.Fatalf("diagnostics: %+v", file.Diagnostics)
+	}
+	got, err := ToYAML(file)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var gotValue, wantValue any
+	if err := yaml.Unmarshal(got, &gotValue); err != nil {
+		t.Fatal(err)
+	}
+	if err := yaml.Unmarshal(want, &wantValue); err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(gotValue, wantValue) {
+		t.Fatalf("rendered YAML differs\nwant:\n%s\ngot:\n%s", want, got)
 	}
 }
 

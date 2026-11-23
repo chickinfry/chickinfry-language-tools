@@ -27,9 +27,7 @@ func ToYAML(file *File) ([]byte, error) {
 		case NodeSchemaBlock:
 			err = renderSchema(file, &out, block)
 		case NodeTypesBlock:
-			// A named record has no YAML form: the wire shape is the record
-			// itself, so each use is expanded where it appears and the
-			// declaration writes nothing.
+			// YAML describes the record at each use, without a type registry.
 		case NodeServicesBlock:
 			err = renderServices(file, &out, block, types)
 		case NodeClientsBlock:
@@ -403,9 +401,7 @@ func withOptional(metadata string, optional bool) string {
 	return strings.TrimSuffix(metadata, "}") + ", optional: true}"
 }
 
-// typeYAML renders a type expression as the YAML field metadata. The YAML
-// surface expresses scalar fields and object lists: a record is valid only as
-// a list's item fields, and anything else is refused where it was written.
+// typeYAML renders a type expression as YAML field metadata.
 func typeYAML(file *File, node *Node, types map[string]*Node) (string, error) {
 	if node == nil {
 		return "{type: string}", nil
@@ -420,14 +416,9 @@ func typeYAML(file *File, node *Node, types map[string]*Node) (string, error) {
 	case NodeTypeList:
 		return listYAML(file, node, types)
 	case NodeTypeRecord:
-		return "", typeError(file, node, "an inline record has no YAML form outside a list item; flatten its fields into the operation's fields, or return them as an object list")
+		return recordYAML(file, node, types, "object", "fields")
 	}
 	if declared := types[node.Name]; declared != nil {
-		if expanded := innerType(declared); expanded != nil && expanded.Kind == NodeTypeRecord {
-			// Report at the use, not the declaration: the author can fix the
-			// operation without leaving the line.
-			return "", typeError(file, node, fmt.Sprintf("%s has no YAML form outside a list item; use it as a list's item type, or flatten its fields", node.Name))
-		}
 		return typeYAML(file, innerType(declared), types)
 	}
 	return fmt.Sprintf("{type: %s}", node.Name), nil
@@ -449,15 +440,19 @@ func listYAML(file *File, node *Node, types map[string]*Node) (string, error) {
 		}
 		return "", typeError(file, node, fmt.Sprintf("a list of %s has no YAML form; the YAML surface declares object lists only, so give the element fields", name))
 	}
-	var parts []string
-	for _, field := range element.Children {
+	return recordYAML(file, element, types, "list", "items")
+}
+
+func recordYAML(file *File, record *Node, types map[string]*Node, kind, key string) (string, error) {
+	parts := make([]string, 0, len(record.Children))
+	for _, field := range record.Children {
 		value, err := typeYAML(file, fullType(field), types)
 		if err != nil {
 			return "", err
 		}
 		parts = append(parts, fmt.Sprintf("%s: %s", field.Name, withOptional(value, field.Optional)))
 	}
-	return fmt.Sprintf("{type: list, items: {%s}}", strings.Join(parts, ", ")), nil
+	return fmt.Sprintf("{type: %s, %s: {%s}}", kind, key, strings.Join(parts, ", ")), nil
 }
 
 func renderClients(file *File, out *strings.Builder, block *Node) error {

@@ -118,9 +118,9 @@ error.
 A record declares fields. A record used as a named type, a union variant, or a
 list element must declare at least one field. An operation input or output may
 be an empty record `{}`.
-A record as a field's type outside a list element is grammar the beta does
-not accept: the YAML surface and the normalized contract have no record kind,
-and the diagnostic names the accepted alternatives.
+A record may be an operation parameter, an output field, a field within
+another record, or a list element. An object field preserves its own name and
+contains its declared fields.
 
 ### Unions
 

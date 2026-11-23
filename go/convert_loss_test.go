@@ -47,3 +47,50 @@ func TestConvertKeepsColumnDefault(t *testing.T) {
 		t.Fatalf("default lost:\n%s", output)
 	}
 }
+
+func TestConvertKeepsNamesThatMatchSettings(t *testing.T) {
+	for _, test := range []struct {
+		role   string
+		source string
+	}{
+		{"api", `services:
+  public:
+    operations:
+      offline:
+        input:
+          default: {type: string}
+          payload:
+            type: object
+            fields:
+              method: {type: string}
+              one_of: {type: string}
+        output:
+          public: {type: string}
+          rows:
+            type: list
+            items:
+              offline: {type: string}
+              default: {type: string}
+              payload: {type: object, fields: {public: {type: string}}}
+`},
+		{"project", `project:
+  name: demo
+generation:
+  server:
+    language: typescript
+  clients: [go, typescript]
+storage:
+  method: s3
+vault: chickinfry
+`},
+	} {
+		t.Run(test.role, func(t *testing.T) {
+			source := []byte(test.source)
+			converted, diagnostics := Convert(test.role, source)
+			if len(diagnostics) != 0 {
+				t.Fatalf("refused: %+v", diagnostics)
+			}
+			assertRenderedYAML(t, test.role, converted, source)
+		})
+	}
+}

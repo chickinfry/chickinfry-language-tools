@@ -19,24 +19,67 @@ type refusal struct {
 // .chik form. It runs before rendering so a refusal never leaves a partial
 // result.
 func checkConvertible(role string, node *yaml.Node) []refusal {
-	c := &convertCheck{role: role}
-	c.walk(node, "")
+	var context apiMapping
+	if role == "api" {
+		context = apiDocument
+	}
+	var c convertCheck
+	c.walk(node, "", context)
 	return c.refusals
 }
 
 type convertCheck struct {
-	role     string
 	refusals []refusal
+}
+
+type apiMapping int
+
+const (
+	otherMapping apiMapping = iota
+	apiDocument
+	apiServiceNames
+	apiService
+	apiOperationNames
+	apiOperation
+	apiFieldNames
+	apiField
+)
+
+// child identifies maps of customer names separately from their declarations.
+func (context apiMapping) child(name string) apiMapping {
+	switch context {
+	case apiDocument:
+		if name == "services" {
+			return apiServiceNames
+		}
+	case apiServiceNames:
+		return apiService
+	case apiService:
+		if name == "operations" {
+			return apiOperationNames
+		}
+	case apiOperationNames:
+		return apiOperation
+	case apiOperation:
+		if name == "input" || name == "output" {
+			return apiFieldNames
+		}
+	case apiFieldNames:
+		return apiField
+	case apiField:
+		if name == "fields" || name == "items" {
+			return apiFieldNames
+		}
+	}
+	return otherMapping
 }
 
 func (c *convertCheck) refuse(path, message string) {
 	c.refusals = append(c.refusals, refusal{path: path, message: message})
 }
 
-// walk visits every mapping and sequence, refusing a construct the grammar has
-// no form for. It deliberately checks named constructs rather than every key:
-// a key may be a declaration name, and a name is not a field.
-func (c *convertCheck) walk(node *yaml.Node, path string) {
+// walk rejects aliases in any role and unsupported settings in API declarations.
+func (c *convertCheck) walk(node *yaml.Node, path string, context apiMapping) {
 	if node == nil {
 		return
 	}
@@ -47,12 +90,14 @@ func (c *convertCheck) walk(node *yaml.Node, path string) {
 			if path == "" {
 				child = entry.name
 			}
-			c.checkKey(entry.name, child, entry.node)
-			c.walk(entry.node, child)
+			if context == apiOperation || context == apiField {
+				c.checkKey(entry.name, child, entry.node)
+			}
+			c.walk(entry.node, child, context.child(entry.name))
 		}
 	case yaml.SequenceNode:
 		for index, item := range node.Content {
-			c.walk(item, fmt.Sprintf("%s[%d]", path, index))
+			c.walk(item, fmt.Sprintf("%s[%d]", path, index), otherMapping)
 		}
 	case yaml.AliasNode:
 		c.refuse(path, "an alias has no .chik form")
@@ -65,10 +110,7 @@ func (c *convertCheck) checkKey(name, path string, value *yaml.Node) {
 	case "one_of":
 		c.refuse(path, "one_of groups have no .chik form yet; keep this declaration in YAML")
 	case "default":
-		// A database column default has a form; an API input default does not.
-		if c.role != "schema" {
-			c.refuse(path, "an input default has no .chik form yet; keep this declaration in YAML")
-		}
+		c.refuse(path, "an input default has no .chik form yet; keep this declaration in YAML")
 	case "offline", "method", "public":
 		if value.Kind != yaml.ScalarNode || value.Value != "false" || name == "public" {
 			c.refuse(path, name+" has no .chik form yet; keep this declaration in YAML")

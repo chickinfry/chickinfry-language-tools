@@ -86,12 +86,11 @@ A check predicate keeps the typed tree shape from YAML: `column`, `all`, `any`,
 
 ## api.chik
 
-A `types` block names a record so it can be reused as a list's item fields.
-YAML has no way to name a record, and this is the one construct the beta
-adds: the wire shape is unchanged, so a generated client does not differ.
-A record anywhere else — a field's type outside a list element, inline or
-named — has no form in the YAML surface or the normalized contract, and the
-conversion refuses it with the accepted alternatives in the diagnostic.
+A `types` block names a record for reuse in operation inputs and outputs and in
+other records. YAML describes its shape where it is used. A single record
+expands to `type: object` with a `fields` map under the declared field name.
+A list of records expands to `type: list` with the same field map under `items`.
+Inline and named records of the same shape generate the same contract.
 
 ```text
 types {
@@ -100,7 +99,7 @@ types {
 services {
   posts {
     operations {
-      get(id: id) -> { id: id, title: string }
+      get(id: id) -> { post: Post }
       list() -> {
         rows: Post[],
       }
@@ -112,8 +111,8 @@ services {
 
 The beta operation form has no `public` selector and no `at` address: both are
 later-release features. Input and output fields keep the YAML metadata
-`optional`, `nullable`, `default`, and list `items`, plus the `one_of` group
-map.
+`optional`, `nullable`, `default`, object `fields`, and list `items`, plus the
+`one_of` group map.
 
 ```text
 create(title: string, subtitle: string optional, cover: string? optional)
@@ -194,7 +193,6 @@ position, exactly as YAML refuses an unknown capability.
 | `union(kind)` | New capability. |
 | `json` | New capability. |
 | `map<string, T>` | New capability. |
-| A record outside a list item | The YAML form and the normalized contract have no record kind; widening both, the published schema, and every generator is a separate decision. |
 | A list whose element is not a record | The YAML surface declares object lists only. |
 
 Unions and `Page` appear in the grammar draft because they are part of the

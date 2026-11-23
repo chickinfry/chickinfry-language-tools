@@ -490,10 +490,8 @@ func convertResult(output *yaml.Node) string {
 // a list element.
 func fieldHasRecord(node *yaml.Node) bool {
 	meta := fields(node)
-	if kind, _ := scalar(meta["type"]); kind == "list" {
-		return len(fields(meta["items"])) > 0
-	}
-	return false
+	kind, _ := scalar(meta["type"])
+	return kind == "object" || kind == "list" && len(fields(meta["items"])) > 0
 }
 
 // convertFieldType reads the YAML field metadata: type, items, nullable, and
@@ -507,24 +505,31 @@ func convertFieldType(node *yaml.Node) string {
 		return ""
 	}
 	kind, _ := scalar(meta["type"])
+	result := kind
 	switch kind {
-	case "list":
-		items := fields(meta["items"])
-		if len(items) == 0 {
+	case "list", "object":
+		key := "fields"
+		if kind == "list" {
+			key = "items"
+		}
+		entries := pairs(meta[key])
+		if kind == "list" && len(entries) == 0 {
 			return "string[]"
 		}
-		var parts []string
-		for _, entry := range pairs(meta["items"]) {
+		parts := make([]string, 0, len(entries))
+		for _, entry := range entries {
 			parts = append(parts, entry.name+": "+convertFieldType(entry.node)+optionalSuffix(entry.node))
 		}
-		return "{ " + strings.Join(parts, ", ") + " }[]"
+		result = "{ " + strings.Join(parts, ", ") + " }"
+		if kind == "list" {
+			result += "[]"
+		}
 	case "":
 		return "string"
 	}
 	if meta["default"] != nil {
 		return ""
 	}
-	result := kind
 	if nullable := meta["nullable"]; nullable != nil && nullable.Value == "true" {
 		result += "?"
 	}
