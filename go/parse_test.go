@@ -78,7 +78,7 @@ func TestStringEscapesRoundtrip(t *testing.T) {
 
 // TestEmptyFileIsReported covers the smallest broken input.
 func TestEmptyFileIsReported(t *testing.T) {
-	file := Parse("chik/api.chik", "// only a comment\n")
+	file := Parse("chik/project.chik", "// only a comment\n")
 	if len(file.Diagnostics) == 0 || file.Diagnostics[0].Code != CodeEmptyFile {
 		t.Fatalf("diagnostics = %+v", file.Diagnostics)
 	}

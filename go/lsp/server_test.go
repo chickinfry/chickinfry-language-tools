@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"slices"
 	"strings"
 	"testing"
 )
@@ -81,6 +83,42 @@ func TestOpenPublishesTheParserDiagnostics(t *testing.T) {
 	}
 	if params.Diagnostics[0].Range.Start.Line != 1 {
 		t.Errorf("start line = %d, want 1 (zero-based)", params.Diagnostics[0].Range.Start.Line)
+	}
+}
+
+func TestOpenOptionalRoleWithoutDeclarations(t *testing.T) {
+	for _, test := range []struct {
+		name, file, source string
+		want               []string
+	}{
+		{name: "client notes", file: "clients.chik", source: "// Client notes\n"},
+		{name: "API notes", file: "api.chik", source: "/* API notes */\n"},
+		{name: "empty API", file: "api.chik"},
+		{name: "blank clients", file: "clients.chik", source: " \t\r\n"},
+		{name: "required project", file: "project.chik", source: "// Project notes\n", want: []string{"CHK0105"}},
+		{name: "unclosed comment", file: "clients.chik", source: "/* Client notes", want: []string{"CHK0004", "CHK0105"}},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			open := fmt.Sprintf(`{"jsonrpc":"2.0","method":"textDocument/didOpen","params":{"textDocument":{"uri":%q,"version":1,"text":%q}}}`,
+				"file:///p/chik/"+test.file, test.source)
+			replies := run(t, open)
+			if len(replies) != 1 || replies[0].Method != "textDocument/publishDiagnostics" {
+				t.Fatalf("replies = %+v", replies)
+			}
+			var published struct {
+				Diagnostics []Diagnostic `json:"diagnostics"`
+			}
+			if err := json.Unmarshal(replies[0].Params, &published); err != nil {
+				t.Fatal(err)
+			}
+			var codes []string
+			for _, diagnostic := range published.Diagnostics {
+				codes = append(codes, diagnostic.Code)
+			}
+			if !slices.Equal(codes, test.want) {
+				t.Fatalf("diagnostic codes = %v, want %v", codes, test.want)
+			}
+		})
 	}
 }
 
