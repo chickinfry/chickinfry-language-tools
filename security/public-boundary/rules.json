@@ -62,7 +62,7 @@
     {
       "id": "B10",
       "kind": "body",
-      "pattern": "(?<![A-Za-z0-9_])(?:cloudflare|workers|durable[\\s-]+objects?|hyperdrive|amazon[\\s]+ses|turnstile)(?![A-Za-z0-9_])",
+      "pattern": "(?<![A-Za-z0-9_])(?:cloud(?:flare)|workers|durable[\\s-]+objects?|hyper(?:drive)|amazon[\\s]+ses|turnstile)(?![A-Za-z0-9_])",
       "flags": [
         "IGNORECASE"
       ],

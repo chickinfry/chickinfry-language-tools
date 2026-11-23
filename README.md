@@ -1,17 +1,19 @@
 > Draft: the grammar may change.
 
-# Chickinfry language tools
+# Chik language
 
 The specification and conformance corpus for `.chik`, the Chickinfry
 declaration language, and the editor tooling built on it.
 
-This repository holds the definition of the language. The Go implementation
-lives in the Chickinfry CLI so that `chik` stays a single binary.
+The Go implementation is in [`go/`](go/) under the module path
+`github.com/chickinfry/chik-lang/go`. The module can be linked into the
+`chik` binary, including its language server.
 
 ## Contents
 
 | Path | What it holds |
 | --- | --- |
+| `go/` | The Go parser, formatter, converter, diagnostics, and language server. |
 | `spec/` | The grammar, the type system, and the conformance corpus format. |
 | `conformance/` | Input and expected output pairs. This corpus is the specification in executable form. |
 | `scripts/` | Checks that keep the corpus well-formed. |
@@ -58,6 +60,16 @@ grammar drifts from `editors/textmate/`.
 copyable example cannot drift from the grammar.
 `check-keywords.mjs` compares the block keywords in the grammar, the highlight
 queries, the TextMate grammar, and the role file table in `spec/grammar.md`.
+
+Run the Go conformance suite from a checkout of this repository:
+
+```sh
+cd go
+go test -mod=readonly ./...
+```
+
+The tests read the format, errors, conversion, roundtrip, definition, and
+completion cases from the same checkout.
 
 The grammar and the editors are built in their own CI jobs:
 
