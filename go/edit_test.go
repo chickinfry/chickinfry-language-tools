@@ -63,6 +63,28 @@ func TestEditDeletesAUnit(t *testing.T) {
 	}
 }
 
+func TestEditDeletesOnlyTheInlineUnit(t *testing.T) {
+	for _, tt := range []struct {
+		name string
+		line string
+	}{
+		{"before another operation", "/* policy */ list() -> { title: string } /* keep */; count() -> { total: string }"},
+		{"after another operation", "count() -> { total: string }; /* policy */ list() -> { title: string } /* keep */"},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			source := strings.Replace(editAPI, "list() -> { title: string }", tt.line, 1)
+			result := Edit(Parse("chik/api.chik", source), []Change{{Path: "services.posts.operations.list"}})
+			if len(result.Diagnostics) != 0 {
+				t.Fatalf("delete: %+v", result.Diagnostics)
+			}
+			if strings.Contains(result.Source, "list()") || !strings.Contains(result.Source, "count() -> { total: string }") ||
+				!strings.Contains(result.Source, "/* policy */") || !strings.Contains(result.Source, "/* keep */") {
+				t.Fatalf("source after deletion:\n%s", result.Source)
+			}
+		})
+	}
+}
+
 // TestEditRejectsUnknownAndOverlappingPaths keeps a caller from silently
 // editing nothing or claiming the same bytes twice.
 func TestEditRejectsUnknownAndOverlappingPaths(t *testing.T) {

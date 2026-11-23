@@ -200,10 +200,8 @@ func editSpans(file *File, changes []Change) ([]span, []Diagnostic) {
 		}
 		text := change.Text
 		if text == "" {
-			// Deleting a unit also removes the line it occupied, otherwise the
-			// formatter would leave a blank line where the unit used to be.
-			end = lineEnd(file.Source, end)
-			start = lineStart(file.Source, start)
+			spans = append(spans, deletionSpan(file, start, end))
+			continue
 		}
 		spans = append(spans, span{start: start, end: end, text: text})
 	}
@@ -220,6 +218,24 @@ func editSpans(file *File, changes []Change) ([]span, []Diagnostic) {
 		}
 	}
 	return spans, nil
+}
+
+func deletionSpan(file *File, start, end int) span {
+	text := ""
+	next := sort.Search(len(file.Tokens), func(i int) bool { return file.Tokens[i].Start >= end })
+	if next < len(file.Tokens) && file.Tokens[next].Kind == Punct && file.Tokens[next].Text == ";" {
+		separator := file.Tokens[next]
+		text = file.Source[end:separator.Start]
+		end = separator.End
+	}
+
+	first, last := lineStart(file.Source, start), lineEnd(file.Source, end)
+	// Remove an empty line without taking neighboring syntax or comments.
+	if strings.TrimSpace(file.Source[first:start]) == "" && strings.TrimSpace(text) == "" &&
+		strings.TrimSpace(file.Source[end:last]) == "" {
+		return span{start: first, end: last}
+	}
+	return span{start: start, end: end, text: text}
 }
 
 func applySpans(source string, spans []span) string {
