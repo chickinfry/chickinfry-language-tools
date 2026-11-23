@@ -223,7 +223,8 @@ func editSpans(file *File, changes []Change) ([]span, []Diagnostic) {
 func deletionSpan(file *File, start, end int) span {
 	text := ""
 	next := sort.Search(len(file.Tokens), func(i int) bool { return file.Tokens[i].Start >= end })
-	if next < len(file.Tokens) && file.Tokens[next].Kind == Punct && file.Tokens[next].Text == ";" {
+	if next < len(file.Tokens) && file.Tokens[next].Kind == Punct &&
+		(file.Tokens[next].Text == ";" || file.Tokens[next].Text == ",") {
 		separator := file.Tokens[next]
 		text = file.Source[end:separator.Start]
 		end = separator.End

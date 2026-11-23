@@ -85,6 +85,22 @@ func TestEditDeletesOnlyTheInlineUnit(t *testing.T) {
 	}
 }
 
+func TestEditDeletesACommaSeparatedColumn(t *testing.T) {
+	source := "database { tables { posts { columns { /* keep */ title: { type: string }, id: { type: id } } } } }"
+	parsed := Parse("chik/schema.chik", source)
+	if len(parsed.Diagnostics) != 0 {
+		t.Fatalf("fixture: %+v", parsed.Diagnostics)
+	}
+	result := Edit(parsed, []Change{{Path: "database.tables.posts.columns.title"}})
+	if len(result.Diagnostics) != 0 {
+		t.Fatalf("delete: %+v", result.Diagnostics)
+	}
+	if strings.Contains(result.Source, "title:") || !strings.Contains(result.Source, "id:") ||
+		!strings.Contains(result.Source, "/* keep */") {
+		t.Fatalf("source after deletion:\n%s", result.Source)
+	}
+}
+
 // TestEditRejectsUnknownAndOverlappingPaths keeps a caller from silently
 // editing nothing or claiming the same bytes twice.
 func TestEditRejectsUnknownAndOverlappingPaths(t *testing.T) {
