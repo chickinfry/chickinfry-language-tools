@@ -68,12 +68,12 @@ func insertionPoint(file *File, path string) (unit, bool) {
 	// The parser flattens an operations block into its service, so there is no
 	// node for it. A new operation still belongs inside operations { }, and the
 	// block's own brace is found from the service's text.
-	if underOperations && ref.node.Kind == NodeService {
+	if underOperations && ref.kind == NodeService {
 		if block, ok := operationsBlock(file, ref); ok {
 			return block, true
 		}
 	}
-	if ref.node.Kind != NodeService && ref.node.Kind != NodeServicesBlock {
+	if ref.kind != NodeService && ref.kind != NodeServicesBlock {
 		return unit{}, false
 	}
 	return ref, true
@@ -82,31 +82,40 @@ func insertionPoint(file *File, path string) (unit, bool) {
 // operationsBlock returns a synthetic unit spanning the operations { } block of
 // a service, so a new operation can be inserted before its closing brace.
 func operationsBlock(file *File, service unit) (unit, bool) {
-	start, end, ok := unitBytes(file, service)
-	if !ok {
+	tokens := file.Tokens
+	start := sort.Search(len(tokens), func(i int) bool { return tokens[i].Start >= service.start })
+	// A service starts with its name and opening brace, then its operations block.
+	opening := start + 3
+	if opening >= len(tokens) || tokens[opening].Start >= service.end ||
+		tokens[start+2].Kind != Ident || tokens[start+2].Text != "operations" ||
+		tokens[opening].Kind != Punct || tokens[opening].Text != "{" {
 		return unit{}, false
 	}
-	marker := strings.Index(file.Source[start:end], "operations")
-	if marker < 0 {
-		return unit{}, false
+	depth := 1
+	for _, token := range tokens[opening+1:] {
+		if token.Start >= service.end {
+			break
+		}
+		if token.Kind != Punct {
+			continue
+		}
+		switch token.Text {
+		case "{":
+			depth++
+		case "}":
+			depth--
+			if depth == 0 {
+				return unit{start: tokens[opening].Start, end: token.End}, true
+			}
+		}
 	}
-	at := start + marker + len("operations")
-	for at < end && (file.Source[at] == ' ' || file.Source[at] == '\t') {
-		at++
-	}
-	if at >= end || file.Source[at] != '{' {
-		return unit{}, false
-	}
-	return unit{node: &Node{Kind: NodeOperation}, start: at}, true
+	return unit{}, false
 }
 
 // insertionSpan appends a new unit before its container's closing brace, on its
 // own line at the container's child indentation.
 func insertionSpan(file *File, container unit, text string) span {
-	start, end, ok := unitBytes(file, container)
-	if !ok {
-		return span{start: len(file.Source), end: len(file.Source), text: text}
-	}
+	start, end := container.start, container.end
 	// Insert on a fresh line before the container's closing brace. Reusing the
 	// indentation of the block's existing entries keeps the result readable even
 	// before the formatter runs.
@@ -190,14 +199,7 @@ func editSpans(file *File, changes []Change) ([]span, []Diagnostic) {
 			})
 			continue
 		}
-		start, end, ok := unitBytes(file, ref)
-		if !ok {
-			diagnostics = append(diagnostics, Diagnostic{
-				Code: CodeInvalidPath, Severity: "error", Path: change.Path,
-				Message: "the unit has no source span",
-			})
-			continue
-		}
+		start, end := ref.start, ref.end
 		text := change.Text
 		if text == "" {
 			spans = append(spans, deletionSpan(file, start, end))
@@ -251,53 +253,10 @@ func applySpans(source string, spans []span) string {
 	return out.String()
 }
 
-// unit is a node together with the byte offset where it starts. A node's Range
-// starts at its name token, but a block's closing brace is consumed by the
-// parser without being stored in any node's tokens, so the end of the unit has
-// to be found in the token stream.
+// unit holds the byte range of a declaration, excluding separators and trivia.
 type unit struct {
-	node  *Node
-	start int
-}
-
-// unitBytes returns the byte span a unit occupies, from its first token through
-// its closing brace. Leading and trailing trivia stay outside the span, so a
-// comment attached to the unit is not rewritten.
-func unitBytes(file *File, ref unit) (int, int, bool) {
-	if ref.start < 0 || ref.start >= len(file.Source) {
-		return 0, 0, false
-	}
-	start := ref.start
-	last := start
-	depth := 0
-	opened := false
-	for _, token := range file.Tokens {
-		if token.Start < start {
-			continue
-		}
-		if token.Kind == EOF {
-			break
-		}
-		switch token.Text {
-		case "{":
-			depth++
-			opened = true
-		case "}":
-			if opened {
-				depth--
-			}
-		}
-		if token.End > last {
-			last = token.End
-		}
-		if opened && depth == 0 {
-			return start, last, true
-		}
-	}
-	if last <= start {
-		return 0, 0, false
-	}
-	return start, last, true
+	kind       NodeKind
+	start, end int
 }
 
 func lineStart(source string, at int) int {
@@ -332,8 +291,10 @@ func declarationPaths(file *File) map[string]unit {
 		if node == nil || path == "" {
 			return
 		}
-		if at, ok := offsetOf(file.Source, node.Range.Start); ok {
-			index[path] = unit{node: node, start: at}
+		start, startOK := offsetOf(file.Source, node.Range.Start)
+		end, endOK := offsetOf(file.Source, node.Range.End)
+		if startOK && endOK && end > start {
+			index[path] = unit{kind: node.Kind, start: start, end: end}
 		}
 	}
 	for _, block := range root.Children {
