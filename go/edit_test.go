@@ -63,6 +63,84 @@ func TestEditDeletesAUnit(t *testing.T) {
 	}
 }
 
+func TestEditDeletesOnlyTheInlineUnit(t *testing.T) {
+	for _, tt := range []struct {
+		name string
+		line string
+	}{
+		{"before another operation", "/* policy */ list() -> { title: string } /* keep */; count() -> { total: string }"},
+		{"after another operation", "count() -> { total: string }; /* policy */ list() -> { title: string } /* keep */"},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			source := strings.Replace(editAPI, "list() -> { title: string }", tt.line, 1)
+			result := Edit(Parse("chik/api.chik", source), []Change{{Path: "services.posts.operations.list"}})
+			if len(result.Diagnostics) != 0 {
+				t.Fatalf("delete: %+v", result.Diagnostics)
+			}
+			if strings.Contains(result.Source, "list()") || !strings.Contains(result.Source, "count() -> { total: string }") ||
+				!strings.Contains(result.Source, "/* policy */") || !strings.Contains(result.Source, "/* keep */") {
+				t.Fatalf("source after deletion:\n%s", result.Source)
+			}
+		})
+	}
+}
+
+func TestEditDeletesOnlyTheScalarPolicy(t *testing.T) {
+	source := `auth {
+  methods: [password]
+  signup: "open"; /* Keep the session policy. */ session: { idle: "1h" }
+}
+`
+	file := Parse("chik/auth.chik", source)
+	if len(file.Diagnostics) != 0 {
+		t.Fatalf("fixture: %+v", file.Diagnostics)
+	}
+	result := Edit(file, []Change{{Path: "auth.signup"}})
+	if len(result.Diagnostics) != 0 {
+		t.Fatalf("delete: %+v", result.Diagnostics)
+	}
+	for _, want := range []string{"methods: [password]", "/* Keep the session policy. */", "session: {", `idle: "1h"`} {
+		if !strings.Contains(result.Source, want) {
+			t.Fatalf("source lacks %q:\n%s", want, result.Source)
+		}
+	}
+	if strings.Contains(result.Source, "signup:") {
+		t.Fatalf("signup survived:\n%s", result.Source)
+	}
+}
+
+func TestEditDeletesAnOperationWithARecordInput(t *testing.T) {
+	source := strings.Replace(editAPI, "list() -> { title: string }",
+		"put(data: { name: string }) -> { ok: string }; count() -> { total: string }", 1)
+	file := Parse("chik/api.chik", source)
+	if len(file.Diagnostics) != 0 {
+		t.Fatalf("fixture: %+v", file.Diagnostics)
+	}
+	result := Edit(file, []Change{{Path: "services.posts.operations.put"}})
+	if len(result.Diagnostics) != 0 {
+		t.Fatalf("delete: %+v", result.Diagnostics)
+	}
+	if strings.Contains(result.Source, "put(") || !strings.Contains(result.Source, "count() -> { total: string }") {
+		t.Fatalf("source after deletion:\n%s", result.Source)
+	}
+}
+
+func TestEditDeletesACommaSeparatedColumn(t *testing.T) {
+	source := "database { tables { posts { columns { /* keep */ title: { type: string }, id: { type: id } } } } }"
+	parsed := Parse("chik/schema.chik", source)
+	if len(parsed.Diagnostics) != 0 {
+		t.Fatalf("fixture: %+v", parsed.Diagnostics)
+	}
+	result := Edit(parsed, []Change{{Path: "database.tables.posts.columns.title"}})
+	if len(result.Diagnostics) != 0 {
+		t.Fatalf("delete: %+v", result.Diagnostics)
+	}
+	if strings.Contains(result.Source, "title:") || !strings.Contains(result.Source, "id:") ||
+		!strings.Contains(result.Source, "/* keep */") {
+		t.Fatalf("source after deletion:\n%s", result.Source)
+	}
+}
+
 // TestEditRejectsUnknownAndOverlappingPaths keeps a caller from silently
 // editing nothing or claiming the same bytes twice.
 func TestEditRejectsUnknownAndOverlappingPaths(t *testing.T) {
@@ -110,11 +188,11 @@ func TestEditRefusesACandidateThatDoesNotParse(t *testing.T) {
 // one, and a new unit reported "no unit at this path".
 func TestEditAddsANewOperation(t *testing.T) {
 	file := Parse("chik/api.chik", editAPI)
-	result := Edit(file, []Change{{Path: "services.posts.operations.list", Text: "list() -> { title: string }"}})
+	result := Edit(file, []Change{{Path: "services.posts.operations.summary", Text: "summary() -> { title: string }"}})
 	if len(result.Diagnostics) != 0 {
 		t.Fatalf("diagnostics: %+v", result.Diagnostics)
 	}
-	if !strings.Contains(result.Source, "list() -> { title: string }") {
+	if !strings.Contains(result.Source, "summary() -> { title: string }") {
 		t.Fatalf("operation missing:\n%s", result.Source)
 	}
 	if !strings.Contains(result.Source, "// header comment") {

@@ -277,7 +277,7 @@ func (p *parser) entries(path string) []*Node {
 		name := p.next().Text
 		p.next()
 		value := p.value(path + "." + name)
-		entry := &Node{Kind: NodeEntry, Name: name, Children: value, Range: nodeRange(start, p.at())}
+		entry := &Node{Kind: NodeEntry, Name: name, Children: value, Range: nodeRange(start, p.tokens[p.pos-1])}
 		p.endEntry(path + "." + name)
 		nodes = append(nodes, entry)
 	}
@@ -404,8 +404,8 @@ func (p *parser) operation(path string) *Node {
 		result.Range = nodeRange(recordStart, recordEnd)
 		operation.Children = append(operation.Children, result)
 	}
+	operation.Range = nodeRange(start, p.tokens[p.pos-1])
 	p.endEntry(path)
-	operation.Range = nodeRange(start, p.at())
 	return operation
 }
 
@@ -533,14 +533,14 @@ func (p *parser) typeDecl(path string) *Node {
 				})
 			}
 		}
+		node.Range = nodeRange(start, p.tokens[p.pos-1])
 		p.endEntry(path + "." + start.Text)
-		node.Range = nodeRange(start, p.at())
 		return node
 	}
 	// Retain modifiers until the checker knows where the type is used.
 	node.Children = p.typeExpr(path+"."+start.Text, true)
+	node.Range = nodeRange(start, p.tokens[p.pos-1])
 	p.endEntry(path + "." + start.Text)
-	node.Range = nodeRange(start, p.at())
 	return node
 }
 
@@ -598,7 +598,7 @@ func (p *parser) inlineEntries(path string) []*Node {
 		p.next()
 		entry := &Node{Kind: NodeEntry, Name: start.Text, Path: path + "." + start.Text}
 		entry.Children = p.value(path + "." + start.Text)
-		entry.Range = nodeRange(start, p.at())
+		entry.Range = nodeRange(start, p.tokens[p.pos-1])
 		nodes = append(nodes, entry)
 		if p.atPunct(",") {
 			p.next()
@@ -643,7 +643,7 @@ func (p *parser) blockEntries(path string) []*Node {
 		p.next()
 		entry := &Node{Kind: NodeEntry, Name: start.Text, Path: path + "." + start.Text}
 		entry.Children = p.value(path + "." + start.Text)
-		entry.Range = nodeRange(start, p.at())
+		entry.Range = nodeRange(start, p.tokens[p.pos-1])
 		nodes = append(nodes, entry)
 		if p.atPunct(";") || p.atPunct(",") {
 			p.next()

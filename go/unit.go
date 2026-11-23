@@ -45,11 +45,7 @@ func UnitText(role string, yamlDocument []byte, paths []string) (map[string]stri
 		if !ok {
 			continue
 		}
-		start, end, ok := unitBytes(file, ref)
-		if !ok {
-			continue
-		}
-		units[path] = file.Source[start:end]
+		units[path] = file.Source[ref.start:ref.end]
 	}
 	return units, nil
 }
