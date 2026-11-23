@@ -418,7 +418,7 @@ func (p *parser) fields(path string, input bool) []*Node {
 		start := p.next()
 		p.next()
 		field := &Node{Kind: NodeField, Name: start.Text}
-		field.Children = p.typeExpr(path+"."+start.Text, true)
+		field.Children = p.typeExpr(path+"."+start.Text, input)
 		// `optional` after a type means the field may be omitted, which is a
 		// different thing from a nullable value. Only an input field can be
 		// omitted, so the compiler's rule is reported here rather than left for

@@ -13,6 +13,7 @@ func TestOptionalIsAnInputModifier(t *testing.T) {
 		{"bare", "services {\n  s {\n    operations {\n      o(a: string optional) -> {}\n    }\n  }\n}\n"},
 		{"nullable", "services {\n  s {\n    operations {\n      o(a: string? optional) -> {}\n    }\n  }\n}\n"},
 		{"list", "services {\n  s {\n    operations {\n      o(a: { b: string }[] optional) -> {}\n    }\n  }\n}\n"},
+		{"nested input", "services {\n  s {\n    operations {\n      o(a: { rows: { title: string optional }[] }) -> {}\n    }\n  }\n}\n"},
 	}
 	for _, test := range cases {
 		t.Run(test.name, func(t *testing.T) {
@@ -31,13 +32,30 @@ func TestOptionalIsAnInputModifier(t *testing.T) {
 	}
 }
 
-// TestOptionalOnOutputIsRejected keeps the compiler's rule where the author
-// writes it: an output field is always present, so the modifier has no meaning
-// and would be dropped when rendered.
 func TestOptionalOnOutputIsRejected(t *testing.T) {
-	file := Parse("chik/api.chik", "services {\n  s {\n    operations {\n      o() -> { a: string optional }\n    }\n  }\n}\n")
-	if len(file.Diagnostics) != 1 || file.Diagnostics[0].Code != CodeInvalidModifier {
-		t.Fatalf("diagnostics = %+v, want one %s", file.Diagnostics, CodeInvalidModifier)
+	for _, test := range []struct {
+		name, result, path string
+	}{
+		{"scalar", "{ title: string optional }", "title"},
+		{"object", "{ post: { title: string optional } }", "post.title"},
+		{"nested list", "{ rows: { post: { title: string optional } }[] }", "rows.post.title"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			line := "      o() -> " + test.result
+			file := Parse("chik/api.chik", "services {\n  s {\n    operations {\n"+line+"\n    }\n  }\n}\n")
+			if len(file.Diagnostics) != 1 {
+				t.Fatalf("diagnostics = %+v, want one %s", file.Diagnostics, CodeInvalidModifier)
+			}
+			diagnostic := file.Diagnostics[0]
+			column := strings.Index(line, "optional") + 1
+			wantRange := Range{
+				Start: Pos{Line: 4, Column: column},
+				End:   Pos{Line: 4, Column: column + len("optional")},
+			}
+			if diagnostic.Code != CodeInvalidModifier || diagnostic.Path != "services.s.o."+test.path || diagnostic.Range != wantRange {
+				t.Fatalf("diagnostic = %+v, want %s on optional at %s (%+v)", diagnostic, CodeInvalidModifier, test.path, wantRange)
+			}
+		})
 	}
 }
 
