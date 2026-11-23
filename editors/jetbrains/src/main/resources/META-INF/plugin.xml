@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>dev.chickinfry.chik</id>
     <name>Chik</name>
-    <vendor url="https://github.com/chickinfry/chickinfry-language-tools">Chickinfry</vendor>
+    <vendor url="https://github.com/chickinfry/chik-lang">Chickinfry</vendor>
 
     <description><![CDATA[
         Syntax highlighting and language server support for <code>.chik</code>,
