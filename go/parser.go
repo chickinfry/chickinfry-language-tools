@@ -2,6 +2,7 @@ package chiklang
 
 import (
 	"fmt"
+	"path/filepath"
 	"strings"
 )
 
@@ -21,7 +22,11 @@ type parser struct {
 func Parse(path, source string) *File {
 	tokens, trivia, diags := newLexer(source).run()
 	p := &parser{src: source, tokens: tokens, trivia: trivia, diags: diags}
-	root := p.file()
+	role := filepath.Base(path)
+	// An optional role may retain comments after its last declaration is gone.
+	allowEmpty := (role == "api.chik" || role == "clients.chik") &&
+		len(tokens) == 1 && tokens[0].Kind == EOF && len(diags) == 0
+	root := p.file(allowEmpty)
 	attachTrivia(root, trivia)
 	file := &File{Path: path, Root: root, Diagnostics: p.diags, Source: source, Tokens: tokens, Trivia: trivia}
 	file.Diagnostics = append(file.Diagnostics, Check(file)...)
@@ -163,7 +168,7 @@ func nodeRange(start, end Token) Range {
 	}
 }
 
-func (p *parser) file() *Node {
+func (p *parser) file(allowEmpty bool) *Node {
 	root := &Node{Kind: NodeFile}
 	seen := map[NodeKind]bool{}
 	for p.at().Kind != EOF {
@@ -181,7 +186,7 @@ func (p *parser) file() *Node {
 		seen[block.Kind] = true
 		root.Children = append(root.Children, block)
 	}
-	if len(root.Children) == 0 {
+	if len(root.Children) == 0 && !allowEmpty {
 		p.diags = append(p.diags, Diagnostic{
 			Code: CodeEmptyFile, Severity: "error", Message: "the file declares no block",
 			Range: Range{Start: Pos{Line: 1, Column: 1}, End: Pos{Line: 1, Column: 1}},
