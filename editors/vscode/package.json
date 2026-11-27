@@ -1,10 +1,14 @@
 {
   "name": "chik",
   "displayName": "Chik",
-  "description": "The .chik declaration language: highlighting and diagnostics.",
+  "description": "Syntax highlighting, diagnostics, completion, and navigation for the .chik declaration language.",
   "version": "0.0.1",
   "publisher": "chickinfry",
   "license": "Apache-2.0",
+  "icon": "images/chik.png",
+  "bugs": {
+    "url": "https://github.com/chickinfry/chik-lang/issues"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/chickinfry/chik-lang"
@@ -58,6 +62,7 @@
   "scripts": {
     "compile": "tsc -p .",
     "test": "node --test out/test/*.test.js",
+    "vscode:prepublish": "npm run compile",
     "package": "vsce package"
   },
   "dependencies": {

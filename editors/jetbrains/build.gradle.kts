@@ -49,3 +49,9 @@ tasks.withType<Test>().configureEach {
     useJUnit()
 }
 
+tasks.processResources {
+    from(rootProject.file("../../LICENSE")) {
+        into("META-INF")
+    }
+}
+

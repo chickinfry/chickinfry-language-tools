@@ -18,6 +18,8 @@ The extension starts the language server from the `chik` binary as
 1. Install the Chickinfry CLI so `chik` is on your `PATH`.
 2. Or set `chik.server.path` to the binary.
 
+Open a `.chik` file to activate the extension.
+
 ## Settings
 
 | Setting | Meaning |
@@ -33,3 +35,5 @@ release adds is still highlighted, but the parser refuses it for now.
 
 Apache-2.0. The grammar is shared with the JetBrains plugin so both editors
 highlight the same code the same way.
+
+Report issues in the [Chik language repository](https://github.com/chickinfry/chik-lang/issues).

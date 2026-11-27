@@ -25,9 +25,11 @@ load there.
 
 | Setting | Meaning |
 | --- | --- |
-| Tools | Chik | Path to the `chik` binary. Empty means look on `PATH`. |
+| **Settings > Tools > Chik** | Path to the `chik` binary. Empty means look on `PATH`. |
 
 ## License
 
 Apache-2.0. The TextMate grammar is shared with the VS Code extension so both
 editors highlight the same code the same way.
+
+Report issues in the [Chik language repository](https://github.com/chickinfry/chik-lang/issues).
