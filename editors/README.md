@@ -9,13 +9,13 @@ Node runtime for the server.
 
 | Directory | Editor |
 | --- | --- |
-| `vscode/` | Visual Studio Code 1.91 and later. |
-| `jetbrains/` | IntelliJ IDEA and other commercial IntelliJ IDEs. |
+| [`vscode/`](vscode/) | Visual Studio Code 1.91 and later, and compatible editors that use Open VSX. |
+| [`jetbrains/`](jetbrains/) | IntelliJ Platform 2026.1 and later, with the commercial LSP API. |
 
 The shared TextMate grammar is `textmate/chik.tmLanguage.json`. VS Code reads
 it from the extension's `package.json`. The JetBrains plugin ships it as a
 VS Code-format bundle, which the TextMate Bundles plugin reads natively.
 
-Neither extension is published. See the repository report for what a
-publisher needs.
+See [packaging and publishing](PUBLISHING.md) to build the installable
+packages or release them to the marketplaces.
 
